@@ -8,7 +8,7 @@ export function setToken(token){
 
 //暴露 获取token的语法
 export function getToken(){
-    return window.localStorage.setItem(KEY)
+    return window.localStorage.getItem(KEY)
 }
 
 //暴露 删除token的方法
