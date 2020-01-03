@@ -62,7 +62,9 @@
 </template>
 
 <script>
-import axios from "axios";
+import {login} from '../../api/login.js'
+import {setToken} from '../../utils/token.js'
+
 // 验证手机号码
 const validatePhone = (rule, value, callback) => {
   if (value == "") {
@@ -80,6 +82,7 @@ export default {
   name: "login",
   data() {
     return {
+      //验证码的基地址
       codeURL: process.env.VUE_APP_BASEURL + "/captcha?type=login",
       ruleForm: {
         phone: "",
@@ -109,17 +112,13 @@ export default {
           return;
         } else {
           if (valid) {
-            axios({
-              url:process.env.VUE_APP_BASEURL +'/login',
-              method:'post',
-              // 跨域 
-              withCredentials:true,
-              data: this.ruleForm,
-            }).then(res=>{
+            login(this.ruleForm).then(res=>{
               //成功回调
               window.console.log(res)
               if (res.data.code==200) {
-                window.localStorage.setItem('token',res.data.data.token)
+                // window.localStorage.setItem('token',res.data.data.token)
+                setToken(res.data.data.token)
+                
                 this.$message.success('登录成功')
                 this.$router.push('/index')
               } else {
