@@ -15,6 +15,7 @@ import index from "../views/index/index.vue";
 import {
   Message
 } from 'element-ui';
+// import store from "../store/store.js";
 
 // 注册
 Vue.use(VueRouter);
@@ -63,6 +64,9 @@ router.beforeEach((to, from, next) => {
             // 跳转去登录页
             next('/login')
         }else{
+            //保存用户信息 
+            // store.commit("SETINFO",res.data.data)
+            // window.console.log(res.data.data)
             // token验证成功
             next('/index')
         }

@@ -52,18 +52,81 @@
         </el-form-item>
         <el-form-item>
           <el-button class="login-btn" type="primary" @click="submitForm()">登录</el-button>
-          <el-button class="login-btn signIn-btn" type="primary" @click="resetForm()">注册</el-button>
+          <el-button
+            class="login-btn signIn-btn"
+            type="primary"
+            @click="dialogFormVisible = true"
+          >注册</el-button>
         </el-form-item>
       </el-form>
     </div>
+    <!-- 注册 -->
+    <el-dialog :visible.sync="dialogFormVisible" class="register-dia" top="0">
+      <div slot="title">
+        <span>用户注册</span>
+      </div>
+      <el-form :model="form">
+        <!-- 上传头像 -->
+        <el-form-item label="头像">
+          <el-upload
+            class="avatar-uploader"
+            id="uploader-box"
+            action="https://jsonplaceholder.typicode.com/posts/"
+            :show-file-list="false"
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload"
+          >
+            <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-form-item>
+
+        <el-form-item label="昵称" :label-width="formLabelWidth">
+          <el-input v-model="form.name"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" :label-width="formLabelWidth">
+          <el-input v-model="form.name"></el-input>
+        </el-form-item>
+        <el-form-item label="手机" :label-width="formLabelWidth">
+          <el-input v-model="form.name"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" :label-width="formLabelWidth">
+          <el-input v-model="form.name"></el-input>
+        </el-form-item>
+        <el-form-item label="图形码" :label-width="formLabelWidth">
+          <el-row>
+            <el-col :span="17">
+              <el-input v-model="form.code"></el-input>
+            </el-col>
+            <el-col :span="7" class="login-col">
+              <img :src="codeURL" alt @click="getRandomCode" />
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="验证码" :label-width="formLabelWidth">
+          <el-row>
+            <el-col :span="17">
+              <el-input v-model="form.code"></el-input>
+            </el-col>
+            <el-col :span="7" class="login-col">
+              <div>获取用户验证码</div>
+            </el-col>
+          </el-row>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
     <!-- 右边的图片 -->
     <img class="bg" src="../../assets/login_banner_ele.png" alt />
   </div>
 </template>
 
 <script>
-import {login} from '../../api/login.js'
-import {setToken} from '../../utils/token.js'
+import { login } from "../../api/login.js";
+import { setToken } from "../../utils/token.js";
 
 // 验证手机号码
 const validatePhone = (rule, value, callback) => {
@@ -100,7 +163,20 @@ export default {
           { required: true, message: "请输入验证码", trigger: "blur" },
           { min: 4, max: 4, message: "长度必须为4", trigger: "blur" }
         ]
-      }
+      },
+      dialogFormVisible: false,
+      form: {
+        name: "",
+        region: "",
+        date1: "",
+        date2: "",
+        delivery: false,
+        type: [],
+        resource: "",
+        desc: ""
+      },
+      formLabelWidth: "60px",
+      imageUrl: ""
     };
   },
   methods: {
@@ -112,21 +188,21 @@ export default {
           return;
         } else {
           if (valid) {
-            login(this.ruleForm).then(res=>{
+            login(this.ruleForm).then(res => {
               //成功回调
-              window.console.log(res)
-              if (res.data.code==200) {
+              window.console.log(res);
+              if (res.data.code == 200) {
                 // window.localStorage.setItem('token',res.data.data.token)
-                setToken(res.data.data.token)
-                
-                this.$message.success('登录成功')
-                this.$router.push('/index')
+                setToken(res.data.data.token);
+
+                this.$message.success("登录成功");
+                this.$router.push("/index");
               } else {
-                this.$message.warning(res.data.message)
+                this.$message.warning(res.data.message);
               }
             });
           } else {
-            this.$message.warning('请输入相关信息')
+            this.$message.warning("请输入相关信息");
             return false;
           }
         }
@@ -139,6 +215,21 @@ export default {
       // this.codeURL=process.env.VUE_APP_BASEURL+'/captcha?type=login&'+Math.random()*99
       this.codeURL =
         process.env.VUE_APP_BASEURL + "/captcha?type=login&_t=" + Date.now();
+    },
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw);
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === "image/jpeg";
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error("上传头像图片只能是 JPG 格式!");
+      }
+      if (!isLt2M) {
+        this.$message.error("上传头像图片大小不能超过 2MB!");
+      }
+      return isJPG && isLt2M;
     }
   }
 };
@@ -221,6 +312,56 @@ export default {
     }
     .signIn-btn {
       margin-top: 26px;
+    }
+  }
+  .register-dia {
+    height: 100%;
+
+    .el-dialog {
+      width: 45%;
+      height: 100%;
+      margin: 0 auto;
+    }
+    .avatar-uploader {
+      display: flex;
+      justify-content: center;
+    }
+    .avatar-uploader .el-upload {
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .avatar-uploader .el-upload:hover {
+      border-color: #409eff;
+    }
+    .avatar-uploader-icon {
+      font-size: 28px;
+      color: #8c939d;
+      width: 178px;
+      height: 178px;
+      line-height: 178px;
+      text-align: center;
+    }
+    .avatar {
+      width: 178px;
+      height: 178px;
+      display: block;
+    }
+  }
+  .el-dialog__header {
+    background: linear-gradient(
+      right,
+      rgba(1, 198, 250, 1),
+      rgba(20, 147, 250, 1)
+    );
+    text-align: center;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 400;
+    button {
+      display: none;
     }
   }
 }

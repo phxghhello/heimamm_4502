@@ -8,6 +8,7 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 // 导入自己的初始化样式
 import './style/base.css'
+import store from './store/store.js'
 
 // 注册 饿了么 ui
 Vue.use(ElementUI);
@@ -18,5 +19,6 @@ Vue.config.productionTip = false
 new Vue({
   render: h => h(App),
   // 挂载 注入 Vue实例
-  router
+  router,
+  store
 }).$mount('#app')
