@@ -14,6 +14,7 @@ Vue.use(ElementUI);
 
 Vue.config.productionTip = false
 
+
 new Vue({
   render: h => h(App),
   // 挂载 注入 Vue实例
