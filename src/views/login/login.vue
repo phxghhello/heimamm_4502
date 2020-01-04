@@ -61,17 +61,17 @@
       </el-form>
     </div>
     <!-- 注册 -->
-    <el-dialog :visible.sync="dialogFormVisible" class="register-dia" top="0" width="600px">
+    <el-dialog :visible.sync="dialogFormVisible" class="register-dia" top="0" width="600px" @closed="closedRegDialog">
       <div slot="title">
         <span>用户注册</span>
       </div>
       <el-form :model="registerForm" ref="registerForm" :rules="rules">
         <!-- 上传头像 -->
-        <el-form-item label="头像" prop="imageUrl">
+        <el-form-item label="头像" prop="avatar">
           <el-upload
             class="avatar-uploader"
             id="uploader-box"
-            action="http://127.0.0.1/heimamm/public/uploads"
+            :action="avatarAction"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
@@ -79,10 +79,12 @@
             <img v-if="imageUrl" :src="imageUrl" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
+          <!-- 隐藏域 -->
+          <el-input type="hidden" v-model="registerForm.avatar"></el-input>
         </el-form-item>
 
-        <el-form-item label="昵称" :label-width="formLabelWidth" prop="nickname">
-          <el-input v-model="registerForm.nickname"></el-input>
+        <el-form-item label="昵称" :label-width="formLabelWidth" prop="username">
+          <el-input v-model="registerForm.username"></el-input>
         </el-form-item>
         <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
           <el-input v-model="registerForm.email"></el-input>
@@ -103,20 +105,24 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item label="验证码" :label-width="formLabelWidth" prop="messcode">
+        <el-form-item label="验证码" :label-width="formLabelWidth" prop="rcode">
           <el-row>
             <el-col :span="17">
-              <el-input v-model="registerForm.messcode"></el-input>
+              <el-input v-model="registerForm.rcode"></el-input>
             </el-col>
-            <el-col :span="7" >
-              <el-button class="register-col2" @click="getPhoneCode" :displayed="delayTime!=0" >点击获取验证码{{delayTime!=0?delayTime+"s":""}}</el-button>
+            <el-col :span="7">
+              <el-button
+                class="register-col2"
+                @click="getPhoneCode"
+                :displayed="delayTime!=0"
+              >{{delayTime!=0?delayTime+"s":""}}点击获取验证码</el-button>
             </el-col>
           </el-row>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer register-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="submitRegForm">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 右边的图片 -->
@@ -125,8 +131,22 @@
 </template>
 
 <script>
-import { login, sendsms } from "../../api/login.js";
+import { login, sendsms, register } from "../../api/login.js";
 import { setToken } from "../../utils/token.js";
+
+//验证邮箱
+const validateEmail = (rule, value, callback) => {
+  if (value == "") {
+    callback(new Error("请输入邮箱"));
+  } else {
+    const reg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
+    if (reg.test(value)) {
+      callback();
+    } else {
+      callback(new Error("邮箱格式不正确"));
+    }
+  }
+};
 
 // 验证手机号码
 const validatePhone = (rule, value, callback) => {
@@ -147,7 +167,8 @@ export default {
     return {
       //验证码的基地址
       codeURL: process.env.VUE_APP_BASEURL + "/captcha?type=login",
-      regcodeURL: process.env.VUE_APP_BASEURL + "/captcha?type=login&_t=1970",
+      regcodeURL: process.env.VUE_APP_BASEURL + "/captcha?type=sendsms",
+      avatarAction: process.env.VUE_APP_BASEURL + "/uploads",
       // 登录表单
       ruleForm: {
         phone: "",
@@ -157,15 +178,16 @@ export default {
       },
       //注册表单
       registerForm: {
-        nickname: "",
+        username: "",
         email: "",
         phone: "",
         password: "",
         piccode: "",
-        messcode: ""
+        rcode: "",
+        avatar: ""
       },
       imageUrl: "",
-      delayTime:0,
+      delayTime: 0,
       rules: {
         phone: [
           { required: true, message: "请输入手机号" },
@@ -180,27 +202,27 @@ export default {
           { min: 4, max: 4, message: "长度必须为4", trigger: "blur" }
         ],
         // 注册表单校验规则
-        imageUrl: [{ required: true }],
-        nickname: [
-          { required: true, message: "请输入昵称", trigger: "blur" },
-          {
-            min: 3,
-            max: 20,
-            message: "长度在 3 到 20 个字符",
-            trigger: "change"
-          }
+        avatar: [
+          { required: true, message: "头像不能为空", trigger: "change" }
+        ],
+        username: [
+          { required: true, message: "昵称不能为空", trigger: "blur" },
+        ],
+        email: [
+          { required: true, message: "邮箱不能为空" },
+          { validator: validateEmail, trigger: "blur" }
         ],
         piccode: [
-          {message: "请输入验证码", trigger: "blur" },
+          {  required: true, message: "图形码不能为空", trigger: "blur" },
           { min: 4, max: 4, message: "长度必须为4", trigger: "blur" }
         ],
-        messcode: [
-          {message: "请输入验证码", trigger: "blur" },
+        rcode: [
+          {  required: true, message: "短信验证码不能为空", trigger: "blur" },
           { min: 4, max: 4, message: "长度必须为4", trigger: "blur" }
         ]
       },
       dialogFormVisible: false,
-      formLabelWidth: "70px"
+      formLabelWidth: "80px"
     };
   },
   methods: {
@@ -244,40 +266,63 @@ export default {
         process.env.VUE_APP_BASEURL
       }/captcha?type=sendsms&t=${Date.now()}`;
     },
+    //提交注册按钮
+    submitRegForm(){
+      window.console.log(this.registerForm.username,this.registerForm.avatar);
+      this.$refs.registerForm.validate(valid=>{
+        if (valid) {
+          register(this.registerForm).then(res=>{
+            window.console.log(res);
+          })
+        }else{
+          this.$message.warning("请检查输入的内容")
+          return false;
+        }
+      })
+    },
 
-    getPhoneCode(){
+    getPhoneCode() {
       window.console.log(this.registerForm.piccode);
-      
+
       if (this.registerForm.piccode.length != 4) {
-        return this.$message.warning('验证码错误,请检查')
+        return this.$message.warning("验证码错误,请检查");
       }
       // 手机号判断
       const reg = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
       if (!reg.test(this.registerForm.phone)) {
-        return this.$message.warning('手机号不对,请检查')
+        return this.$message.warning("手机号不对,请检查");
       }
-      if (this.delayTime==0) {
-        this.delayTime =60;
-        let timeId =setInterval(()=>{
+      if (this.delayTime == 0) {
+        this.delayTime = 60;
+        let timeId = setInterval(() => {
           this.delayTime--;
-          if (this.delayTime==0) {
-            clearInterval(timeId)
+          if (this.delayTime == 0) {
+            clearInterval(timeId);
           }
-        },100);
+        }, 300);
         //调用短信的接口
         sendsms({
-          code:this.registerForm.piccode,
-          phone:this.registerForm.phone
-        }).then(res=>{
-          window.console.log(res)
-        })
+          code: this.registerForm.piccode,
+          phone: this.registerForm.phone
+        }).then(res => {
+          window.console.log("短信验证码是:",res.data.data.captcha);
+          this.$message.info("短信验证码是:"+res.data.data.captcha)
+        });
       }
+    },
+    // 关闭注册对话框
+    closedRegDialog(){
+      this.$refs.registerForm.resetFields();
+      this.imageUrl="";
     },
 
     handleAvatarSuccess(res, file) {
+      window.console.log(res);
+      this.registerForm.avatar = res.data.file_path;
       this.imageUrl = URL.createObjectURL(file.raw);
       //准备提交的数据
-      this.registerForm.avatar = res.data.file_path;
+      // this.registerForm.avatar = res.data.file_path;
+
     },
     beforeAvatarUpload(file) {
       const isJPG = file.type === "image/jpeg";
@@ -436,7 +481,7 @@ export default {
     border: 1px solid #ccc;
     text-align: center;
     color: rgba(86, 88, 93, 1);
-    font-size: 15px;
+    font-size: 12px;
   }
   .register-footer {
     display: flex;
