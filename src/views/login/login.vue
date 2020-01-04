@@ -61,7 +61,7 @@
       </el-form>
     </div>
     <!-- 注册 -->
-    <el-dialog :visible.sync="dialogFormVisible" class="register-dia" top="0">
+    <el-dialog :visible.sync="dialogFormVisible" class="register-dia" top="0" width="600px">
       <div slot="title">
         <span>用户注册</span>
       </div>
@@ -93,10 +93,10 @@
         <el-form-item label="密码" :label-width="formLabelWidth" prop="password">
           <el-input v-model="registerForm.password"></el-input>
         </el-form-item>
-        <el-form-item label="图形码" :label-width="formLabelWidth" prop="picode">
+        <el-form-item label="图形码" :label-width="formLabelWidth" prop="piccode">
           <el-row>
             <el-col :span="17">
-              <el-input v-model="registerForm.code"></el-input>
+              <el-input v-model="registerForm.piccode"></el-input>
             </el-col>
             <el-col :span="7" class="register-col">
               <img :src="regcodeURL" alt @click="randomRegisterCaptcha" />
@@ -108,8 +108,8 @@
             <el-col :span="17">
               <el-input v-model="registerForm.messcode"></el-input>
             </el-col>
-            <el-col :span="7" class="register-col2">
-              <div>获取用户验证码</div>
+            <el-col :span="7" >
+              <el-button class="register-col2" @click="getPhoneCode" :displayed="delayTime!=0" >点击获取验证码{{delayTime!=0?delayTime+"s":""}}</el-button>
             </el-col>
           </el-row>
         </el-form-item>
@@ -125,7 +125,7 @@
 </template>
 
 <script>
-import { login } from "../../api/login.js";
+import { login, sendsms } from "../../api/login.js";
 import { setToken } from "../../utils/token.js";
 
 // 验证手机号码
@@ -165,6 +165,7 @@ export default {
         messcode: ""
       },
       imageUrl: "",
+      delayTime:0,
       rules: {
         phone: [
           { required: true, message: "请输入手机号" },
@@ -190,11 +191,11 @@ export default {
           }
         ],
         piccode: [
-          { message: "请输入验证码", trigger: "blur" },
+          {message: "请输入验证码", trigger: "blur" },
           { min: 4, max: 4, message: "长度必须为4", trigger: "blur" }
         ],
         messcode: [
-          { message: "请输入验证码", trigger: "blur" },
+          {message: "请输入验证码", trigger: "blur" },
           { min: 4, max: 4, message: "长度必须为4", trigger: "blur" }
         ]
       },
@@ -236,13 +237,43 @@ export default {
       this.codeURL =
         process.env.VUE_APP_BASEURL + "/captcha?type=login&_t=" + Date.now();
     },
-    // 重新获取注册验证码
+    // 获取注册验证码
     randomRegisterCaptcha() {
       // 通过时间戳来重新获取验证码
       this.regcodeURL = `${
         process.env.VUE_APP_BASEURL
       }/captcha?type=sendsms&t=${Date.now()}`;
     },
+
+    getPhoneCode(){
+      window.console.log(this.registerForm.piccode);
+      
+      if (this.registerForm.piccode.length != 4) {
+        return this.$message.warning('验证码错误,请检查')
+      }
+      // 手机号判断
+      const reg = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
+      if (!reg.test(this.registerForm.phone)) {
+        return this.$message.warning('手机号不对,请检查')
+      }
+      if (this.delayTime==0) {
+        this.delayTime =60;
+        let timeId =setInterval(()=>{
+          this.delayTime--;
+          if (this.delayTime==0) {
+            clearInterval(timeId)
+          }
+        },100);
+        //调用短信的接口
+        sendsms({
+          code:this.registerForm.piccode,
+          phone:this.registerForm.phone
+        }).then(res=>{
+          window.console.log(res)
+        })
+      }
+    },
+
     handleAvatarSuccess(res, file) {
       this.imageUrl = URL.createObjectURL(file.raw);
       //准备提交的数据
@@ -379,7 +410,7 @@ export default {
   }
   .el-dialog__header {
     background: linear-gradient(
-      right,
+      left,
       rgba(1, 198, 250, 1),
       rgba(20, 147, 250, 1)
     );
@@ -392,7 +423,7 @@ export default {
     }
   }
   .register-col {
-    padding-left: 25px;
+    padding-left: 6px;
     img {
       width: 143px;
       height: 39px;
@@ -401,7 +432,7 @@ export default {
   .register-col2 {
     width: 143px;
     height: 39px;
-    margin-left: 25px;
+    margin-left: 6px;
     border: 1px solid #ccc;
     text-align: center;
     color: rgba(86, 88, 93, 1);
