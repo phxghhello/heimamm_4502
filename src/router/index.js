@@ -15,7 +15,7 @@ import index from "../views/index/index.vue";
 import {
   Message
 } from 'element-ui';
-// import store from "../store/store.js";
+import store from "../store/store.js";
 
 // 注册
 Vue.use(VueRouter);
@@ -53,24 +53,36 @@ router.beforeEach((to, from, next) => {
       Message.error("必须登录才可以访问首页");
       return next("/login");
     }
-    // token正确性判断
-    userInfo().then(res=>{
-      //为什么是 0
-        if(res.data.code===0){
-            // token验证失效
-            Message.error("登录状态有误，请重新登录")
-            // 删除错误的token
-            removeToken()
-            // 跳转去登录页
-            next('/login')
-        }else{
-            //保存用户信息 
-            // store.commit("SETINFO",res.data.data)
-            // window.console.log(res.data.data)
-            // token验证成功
-            next('/index')
+    // 如果没有用户信息
+    if (!store.state.userInfo) {
+      // token正确性判断
+      userInfo().then(res => {
+        //为什么是 0
+        if (res.data.code === 0) {
+          // token验证失效
+          Message.error("登录状态有误，请重新登录")
+          // 删除错误的token
+          removeToken()
+          // 跳转去登录页
+          next('/login')
+        } else {
+          //保存用户信息 
+          store.commit("SETINFO", res.data)
+          // window.console.log(res.data)
+          // token验证成功
+          next()
         }
-    })
+      })
+    }else{
+      //如果有用户信息,就判断是否允许访问
+      if (to.meta.roles.includes(store.state.userInfo.role)) {
+        next()
+      } else {
+        //不允许访问
+        Message.warning("您没有访问的权限")
+      }
+    }
+
   } else {
     // 放过去
     next();

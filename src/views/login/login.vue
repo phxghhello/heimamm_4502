@@ -65,13 +65,13 @@
       <div slot="title">
         <span>用户注册</span>
       </div>
-      <el-form :model="form">
+      <el-form :model="registerForm" ref="registerForm" :rules="rules">
         <!-- 上传头像 -->
-        <el-form-item label="头像">
+        <el-form-item label="头像" prop="imageUrl">
           <el-upload
             class="avatar-uploader"
             id="uploader-box"
-            action="https://jsonplaceholder.typicode.com/posts/"
+            action="http://127.0.0.1/heimamm/public/uploads"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
@@ -81,40 +81,40 @@
           </el-upload>
         </el-form-item>
 
-        <el-form-item label="昵称" :label-width="formLabelWidth">
-          <el-input v-model="form.name"></el-input>
+        <el-form-item label="昵称" :label-width="formLabelWidth" prop="nickname">
+          <el-input v-model="registerForm.nickname"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" :label-width="formLabelWidth">
-          <el-input v-model="form.name"></el-input>
+        <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
+          <el-input v-model="registerForm.email"></el-input>
         </el-form-item>
-        <el-form-item label="手机" :label-width="formLabelWidth">
-          <el-input v-model="form.name"></el-input>
+        <el-form-item label="手机" :label-width="formLabelWidth" prop="phone">
+          <el-input v-model="registerForm.phone"></el-input>
         </el-form-item>
-        <el-form-item label="密码" :label-width="formLabelWidth">
-          <el-input v-model="form.name"></el-input>
+        <el-form-item label="密码" :label-width="formLabelWidth" prop="password">
+          <el-input v-model="registerForm.password"></el-input>
         </el-form-item>
-        <el-form-item label="图形码" :label-width="formLabelWidth">
+        <el-form-item label="图形码" :label-width="formLabelWidth" prop="picode">
           <el-row>
             <el-col :span="17">
-              <el-input v-model="form.code"></el-input>
+              <el-input v-model="registerForm.code"></el-input>
             </el-col>
-            <el-col :span="7" class="login-col">
-              <img :src="codeURL" alt @click="getRandomCode" />
+            <el-col :span="7" class="register-col">
+              <img :src="regcodeURL" alt @click="randomRegisterCaptcha" />
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item label="验证码" :label-width="formLabelWidth">
+        <el-form-item label="验证码" :label-width="formLabelWidth" prop="messcode">
           <el-row>
             <el-col :span="17">
-              <el-input v-model="form.code"></el-input>
+              <el-input v-model="registerForm.messcode"></el-input>
             </el-col>
-            <el-col :span="7" class="login-col">
+            <el-col :span="7" class="register-col2">
               <div>获取用户验证码</div>
             </el-col>
           </el-row>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-footer register-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
       </div>
@@ -147,14 +147,29 @@ export default {
     return {
       //验证码的基地址
       codeURL: process.env.VUE_APP_BASEURL + "/captcha?type=login",
+      regcodeURL: process.env.VUE_APP_BASEURL + "/captcha?type=login&_t=1970",
+      // 登录表单
       ruleForm: {
         phone: "",
         password: "",
         code: "",
         checked: false
       },
+      //注册表单
+      registerForm: {
+        nickname: "",
+        email: "",
+        phone: "",
+        password: "",
+        piccode: "",
+        messcode: ""
+      },
+      imageUrl: "",
       rules: {
-        phone: [{ validator: validatePhone, trigger: "blur" }],
+        phone: [
+          { required: true, message: "请输入手机号" },
+          { validator: validatePhone, trigger: "blur" }
+        ],
         password: [
           { required: true, message: "请输入密码", trigger: "blur" },
           { min: 6, max: 18, message: "长度在 6 到 18 个字符", trigger: "blur" }
@@ -162,21 +177,29 @@ export default {
         code: [
           { required: true, message: "请输入验证码", trigger: "blur" },
           { min: 4, max: 4, message: "长度必须为4", trigger: "blur" }
+        ],
+        // 注册表单校验规则
+        imageUrl: [{ required: true }],
+        nickname: [
+          { required: true, message: "请输入昵称", trigger: "blur" },
+          {
+            min: 3,
+            max: 20,
+            message: "长度在 3 到 20 个字符",
+            trigger: "change"
+          }
+        ],
+        piccode: [
+          { message: "请输入验证码", trigger: "blur" },
+          { min: 4, max: 4, message: "长度必须为4", trigger: "blur" }
+        ],
+        messcode: [
+          { message: "请输入验证码", trigger: "blur" },
+          { min: 4, max: 4, message: "长度必须为4", trigger: "blur" }
         ]
       },
       dialogFormVisible: false,
-      form: {
-        name: "",
-        region: "",
-        date1: "",
-        date2: "",
-        delivery: false,
-        type: [],
-        resource: "",
-        desc: ""
-      },
-      formLabelWidth: "60px",
-      imageUrl: ""
+      formLabelWidth: "70px"
     };
   },
   methods: {
@@ -208,16 +231,22 @@ export default {
         }
       });
     },
-    resetForm() {
-      this.$refs.ruleForm.resetFields();
-    },
     getRandomCode() {
       // this.codeURL=process.env.VUE_APP_BASEURL+'/captcha?type=login&'+Math.random()*99
       this.codeURL =
         process.env.VUE_APP_BASEURL + "/captcha?type=login&_t=" + Date.now();
     },
+    // 重新获取注册验证码
+    randomRegisterCaptcha() {
+      // 通过时间戳来重新获取验证码
+      this.regcodeURL = `${
+        process.env.VUE_APP_BASEURL
+      }/captcha?type=sendsms&t=${Date.now()}`;
+    },
     handleAvatarSuccess(res, file) {
       this.imageUrl = URL.createObjectURL(file.raw);
+      //准备提交的数据
+      this.registerForm.avatar = res.data.file_path;
     },
     beforeAvatarUpload(file) {
       const isJPG = file.type === "image/jpeg";
@@ -316,12 +345,10 @@ export default {
   }
   .register-dia {
     height: 100%;
+    width: 100%;
+    font-size: 15px;
+    margin: 0 auto;
 
-    .el-dialog {
-      width: 45%;
-      height: 100%;
-      margin: 0 auto;
-    }
     .avatar-uploader {
       display: flex;
       justify-content: center;
@@ -363,6 +390,26 @@ export default {
     button {
       display: none;
     }
+  }
+  .register-col {
+    padding-left: 25px;
+    img {
+      width: 143px;
+      height: 39px;
+    }
+  }
+  .register-col2 {
+    width: 143px;
+    height: 39px;
+    margin-left: 25px;
+    border: 1px solid #ccc;
+    text-align: center;
+    color: rgba(86, 88, 93, 1);
+    font-size: 15px;
+  }
+  .register-footer {
+    display: flex;
+    justify-content: center;
   }
 }
 </style>
