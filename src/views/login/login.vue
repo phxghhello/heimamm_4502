@@ -71,10 +71,10 @@
           <el-upload
             class="avatar-uploader"
             id="uploader-box"
-            :action="avatarAction"
+            action="http://127.0.0.1/heimamm/public/uploads"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
+            :before-upload="beforeAvatarUpload" name="image"
           >
             <img v-if="imageUrl" :src="imageUrl" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -168,7 +168,7 @@ export default {
       //验证码的基地址
       codeURL: process.env.VUE_APP_BASEURL + "/captcha?type=login",
       regcodeURL: process.env.VUE_APP_BASEURL + "/captcha?type=sendsms",
-      avatarAction: process.env.VUE_APP_BASEURL + "/uploads",
+      // avatarAction: process.env.VUE_APP_BASEURL + "/uploads",
       // 登录表单
       ruleForm: {
         phone: "",
@@ -273,6 +273,10 @@ export default {
         if (valid) {
           register(this.registerForm).then(res=>{
             window.console.log(res);
+            if (res.data.code==200) {
+              this.imageUrl ="";
+              this.dialogFormVisible = false
+            }
           })
         }else{
           this.$message.warning("请检查输入的内容")
