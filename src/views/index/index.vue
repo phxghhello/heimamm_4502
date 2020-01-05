@@ -2,7 +2,7 @@
   <el-container class="index-container">
     <el-header class="header">
       <div class="header-left">
-        <i></i>
+        <i class="el-icon-s-fold icon" ></i>
       </div>
       <div class="header-right"></div>
     </el-header>
@@ -20,17 +20,30 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .index-container{
-    height: 100%;
-    background-color: #ccc;
-    .header{
-      height: 60px;
-      background-color: #fff;
-      box-shadow:0px 2px 5px 0px rgba(63, 63, 63, 0.35);
-    }
-    .aside{
+.index-container {
+  height: 100%;
+  background-color: #ccc;
+  .header {
+    height: 60px;
+    background-color: #fff;
+    box-shadow: 0px 2px 5px 0px rgba(63, 63, 63, 0.35);
+    padding-left: 0;
+    display: flex;
+    justify-content: space-between;
+    .header-left {
       height: 100%;
-      background-color: skyblue;
+      width: 214px;
+      background-color: pink;
+      .icon {
+        display: inline-block;
+        width: 24px;
+        height: 20px;
+      }
     }
   }
+  .aside {
+    height: 100%;
+    background-color: skyblue;
+  }
+}
 </style>
