@@ -1,5 +1,5 @@
 <template>
-  <div>数据预览</div>
+  <div>学科列表</div>
 </template>
 
 <script>
