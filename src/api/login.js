@@ -50,3 +50,17 @@ export function info() {
     }
   });
 }
+
+//退出登录
+export function logout() {
+  return axios({
+    url: process.env.VUE_APP_BASEURL + "/logout",
+    method: "get",
+    // 跨域 是否携带 cookie
+    withCredentials: true,
+    headers:{
+      // 从缓存中获取
+      token:getToken()
+    }
+  });
+}

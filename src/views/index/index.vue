@@ -1,48 +1,64 @@
 <template>
   <el-container class="index-container">
-<<<<<<< HEAD
     <el-header class="my-header">
       <!-- 左侧 -->
       <div class="left">
         <i class="icon el-icon-s-fold"></i>
-        <img class="logo" src="../../assets/index_logo.png" alt="" />
+        <img class="logo" src="../../assets/index_logo.png" alt />
         <span class="title">黑马面面</span>
       </div>
       <!-- 右侧 -->
       <div class="right">
-        <img class="avatar" :src="userInfo.avatar" alt="" />
+        <img class="avatar" :src="userInfo.avatar" alt />
         <span class="username">{{ userInfo.username }},您好</span>
-        <el-button size="small" type="primary">退出</el-button>
+        <el-button size="small" @click="logout" type="primary">退出</el-button>
       </div>
     </el-header>
     <el-container>
       <el-aside class="my-aside" width="200px">Aside</el-aside>
       <el-main class="my-main">Main</el-main>
-=======
-    <el-header class="header">
-      <div class="header-left">
-        <i class="el-icon-s-fold icon" ></i>
-      </div>
-      <div class="header-right"></div>
-    </el-header>
-    <el-container>
-      <el-aside width="200px" class="aside">Aside</el-aside>
-      <el-main>Main</el-main>
->>>>>>> index
     </el-container>
   </el-container>
 </template>
 
 <script>
 // 导入api方法
-import { info } from "../../api/login.js";
+import { info, logout } from "../../api/login.js";
+//导入token
+import { removeToken } from "../../utils/token.js";
 export default {
-<<<<<<< HEAD
   name: "index",
   data() {
     return {
       userInfo: {}
     };
+  },
+  methods: {
+    logout() {
+      this.$confirm("确认退出吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          logout().then(res => {
+            if (res.data.code === 200) {
+              removeToken();
+              this.$router.push("/login");
+            }
+          });
+          // this.$message({
+          //   type: "success",
+          //   message: "退出成功!"
+          // });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消!"
+          });
+        });
+    }
   },
   created() {
     info().then(res => {
@@ -50,7 +66,8 @@ export default {
       // 保存数据
       this.userInfo = res.data.data;
       // 头像没有基地址 自己拼接
-      this.userInfo.avatar = process.env.VUE_APP_BASEURL +'/'+ this.userInfo.avatar;
+      this.userInfo.avatar =
+        process.env.VUE_APP_BASEURL + "/" + this.userInfo.avatar;
     });
   }
 };
@@ -103,37 +120,3 @@ export default {
   }
 }
 </style>
-=======
-  name: "index"
-};
-</script>
-
-<style lang="less" scoped>
-.index-container {
-  height: 100%;
-  background-color: #ccc;
-  .header {
-    height: 60px;
-    background-color: #fff;
-    box-shadow: 0px 2px 5px 0px rgba(63, 63, 63, 0.35);
-    padding-left: 0;
-    display: flex;
-    justify-content: space-between;
-    .header-left {
-      height: 100%;
-      width: 214px;
-      background-color: pink;
-      .icon {
-        display: inline-block;
-        width: 24px;
-        height: 20px;
-      }
-    }
-  }
-  .aside {
-    height: 100%;
-    background-color: skyblue;
-  }
-}
-</style>
->>>>>>> index
