@@ -1,5 +1,6 @@
 <template>
   <el-container class="index-container">
+<<<<<<< HEAD
     <el-header class="my-header">
       <!-- 左侧 -->
       <div class="left">
@@ -17,6 +18,17 @@
     <el-container>
       <el-aside class="my-aside" width="200px">Aside</el-aside>
       <el-main class="my-main">Main</el-main>
+=======
+    <el-header class="header">
+      <div class="header-left">
+        <i class="el-icon-s-fold icon" ></i>
+      </div>
+      <div class="header-right"></div>
+    </el-header>
+    <el-container>
+      <el-aside width="200px" class="aside">Aside</el-aside>
+      <el-main>Main</el-main>
+>>>>>>> index
     </el-container>
   </el-container>
 </template>
@@ -25,6 +37,7 @@
 // 导入api方法
 import { info } from "../../api/login.js";
 export default {
+<<<<<<< HEAD
   name: "index",
   data() {
     return {
@@ -90,3 +103,37 @@ export default {
   }
 }
 </style>
+=======
+  name: "index"
+};
+</script>
+
+<style lang="less" scoped>
+.index-container {
+  height: 100%;
+  background-color: #ccc;
+  .header {
+    height: 60px;
+    background-color: #fff;
+    box-shadow: 0px 2px 5px 0px rgba(63, 63, 63, 0.35);
+    padding-left: 0;
+    display: flex;
+    justify-content: space-between;
+    .header-left {
+      height: 100%;
+      width: 214px;
+      background-color: pink;
+      .icon {
+        display: inline-block;
+        width: 24px;
+        height: 20px;
+      }
+    }
+  }
+  .aside {
+    height: 100%;
+    background-color: skyblue;
+  }
+}
+</style>
+>>>>>>> index

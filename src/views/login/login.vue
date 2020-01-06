@@ -502,7 +502,5 @@ export default {
     height: 178px;
     display: block;
   }
-  .bg {
-  }
 }
 </style>
