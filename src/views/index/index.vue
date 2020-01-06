@@ -21,8 +21,6 @@
           default-active="2"
           class="el-menu-vertical-demo"
           :collapse="collapse"
-          @open="handleOpen"
-          @close="handleClose"
         >
           <el-menu-item index="1">
             <!-- e-charts -->
