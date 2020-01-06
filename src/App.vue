@@ -11,7 +11,7 @@ export default {
 };
 </script>
 
-<style>
+<style >
 .app-container {
   height: 100%;
 }

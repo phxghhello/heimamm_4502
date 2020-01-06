@@ -1,29 +1,52 @@
-//导入axios请求对象
-import request from './request.js'
+// 导入axios
+import axios from "axios";
+import {getToken} from "../utils/token.js"
 
-//暴露登录的接口
-export function login(data){
-    return request({
-        url:"/login",
-        method:"post",
-        data,
-    })
+// 定义一个登陆的方法 并暴露出去
+export function login(data) {
+  return axios({
+    url: process.env.VUE_APP_BASEURL + "/login",
+    method: "post",
+    // 跨域 是否携带 cookie
+    withCredentials: true,
+    data // data: data
+  });
 }
 
-//暴露短信的接口
-export function sendsms(data){
-    return request({
-        url:"/sendsms",
-        method:"post",
-        data
-    })
+// 定义一个 获取短信的 方法 并暴露出去
+export function sendsms(data) {
+  return axios({
+    url: process.env.VUE_APP_BASEURL + "/sendsms",
+    method: "post",
+    // 跨域 是否携带 cookie
+    withCredentials: true,
+    data // data: data
+  });
+}
+// 定义一个 用户注册的 方法 并暴露出去
+export function register(data) {
+  return axios({
+    url: process.env.VUE_APP_BASEURL + "/register",
+    method: "post",
+    // 跨域 是否携带 cookie
+    withCredentials: true,
+    data // data: data
+  });
 }
 
-//暴露注册的接口
-export function register(data){
-    return request({
-        url:"/register",
-        method:"post",
-        data
-    })
+
+// 获取用户信息
+export function info() {
+  return axios({
+    url: process.env.VUE_APP_BASEURL + "/info",
+    method: "get",
+    // 跨域 是否携带 cookie
+    withCredentials: true,
+    headers:{
+      // 从缓存中获取
+      // token:window.localStorage.getItem("heimammtoken")
+      token:getToken()
+
+    }
+  });
 }

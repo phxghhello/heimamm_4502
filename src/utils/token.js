@@ -2,7 +2,7 @@
 const KEY = 'mmtoken'
 
 //暴露 保存token的方法
-export function setToken(token){
+export function saveToken(token){
     window.localStorage.setItem(KEY,token)
 }
 
