@@ -99,7 +99,7 @@ export default {
     info().then(res => {
       // window.console.log(res);
       // 保存数据
-      this.userInfo = res.data.data;
+      this.userInfo = res.data;
       // 头像没有基地址 自己拼接
       this.userInfo.avatar =
         process.env.VUE_APP_BASEURL + "/" + this.userInfo.avatar;

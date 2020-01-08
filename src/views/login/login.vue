@@ -339,7 +339,7 @@ export default {
       // 获取服务器返回的 地址
       // window.console.log(res.data.file_path);
       // 保存到 注册表单的 头像中
-      this.registerForm.avatar =res.data.file_path;
+      this.registerForm.avatar =res.file_path;
     },
     // 上传之前
     beforeAvatarUpload(file) {

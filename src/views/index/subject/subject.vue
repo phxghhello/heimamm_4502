@@ -3,16 +3,16 @@
     <el-card class="header-card">
       <el-form :inline="true" :model="subjectForm" class="demo-form-inline">
         <el-form-item label="学科编号">
-          <el-input v-model="subjectForm.user" class="short-input"></el-input>
+          <el-input v-model="subjectForm.rid" class="short-input"></el-input>
         </el-form-item>
         <el-form-item label="学科名称">
-          <el-input v-model="subjectForm.user" class="long-input"></el-input>
+          <el-input v-model="subjectForm.name" class="long-input"></el-input>
         </el-form-item>
         <el-form-item label="创建者">
-          <el-input v-model="subjectForm.user" class="short-input"></el-input>
+          <el-input v-model="subjectForm.username" class="short-input"></el-input>
         </el-form-item>
         <el-form-item label="状态">
-          <el-select v-model="subjectForm.region" placeholder="请选择状态" class="long-input">
+          <el-select v-model="subjectForm.status" placeholder="请选择状态" class="long-input">
             <el-option label="禁用" value="0"></el-option>
             <el-option label="启用" value="1"></el-option>
           </el-select>
@@ -26,14 +26,14 @@
     </el-card>
     <el-card class="main-card">
       <el-table :data="subjectTable" style="width: 100%">
-        <el-table-column type="index" prop="date" label="序号"></el-table-column>
-        <el-table-column prop="name" label="学科编号"></el-table-column>
-        <el-table-column prop="address" label="学科名称"></el-table-column>
-        <el-table-column prop="address" label="简称"></el-table-column>
-        <el-table-column prop="address" label="创建者"></el-table-column>
-        <el-table-column prop="address" label="创建日期"></el-table-column>
-        <el-table-column prop="address" label="状态"></el-table-column>
-        <el-table-column prop="address" label="操作"></el-table-column>
+        <el-table-column type="index" label="序号"></el-table-column>
+        <el-table-column prop="rid" label="学科编号"></el-table-column>
+        <el-table-column prop="name" label="学科名称"></el-table-column>
+        <el-table-column prop="short_name" label="简称"></el-table-column>
+        <el-table-column prop="username" label="创建者"></el-table-column>
+        <el-table-column prop="date" label="创建日期"></el-table-column>
+        <el-table-column prop="status" label="状态"></el-table-column>
+        <el-table-column label="操作"></el-table-column>
       </el-table>
       <el-pagination
         class="my-pagination"
@@ -53,6 +53,7 @@
 </template>
 
 <script>
+//导入学科新增框
 import subjectDialog from './components/subjectDialog.vue'
 
 export default {
@@ -70,9 +71,11 @@ export default {
     };
   },
   methods: {
+    // 页容量改变
     handleSizeChange(limit){
       window.console.log("页容量"+limit)
     },
+    //当前页改变
     handleCurrentChange(page){
       window.console.log("当前页面"+page)
     }
