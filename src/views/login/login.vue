@@ -251,15 +251,15 @@ export default {
             password: this.ruleForm.password,
             code: this.ruleForm.code
           }).then(res => {
-            // window.console.log(res);
-            if (res.data.code === 202) {
+            window.console.log(res);
+            if (res.code === 202) {
               // 错误
-              this.$message.error(res.data.message);
-            } else if (res.data.code === 200) {
+              this.$message.error(res.message);
+            } else if (res.code === 200) {
               this.$message.success("老铁，你可算回来啦！！！");
               // 存token
               // window.localStorage.setItem("heimammtoken",res.data.data.token)
-              saveToken(res.data.data.token)
+              saveToken(res.data.token)
               // 去首页
               this.$router.push("/index")
             }
@@ -324,8 +324,8 @@ export default {
         phone: this.registerForm.phone
       }).then(res => {
         // window.console.log(res)
-        if (res.data.code == 200) {
-          this.$message.success("短信验证码是:" + res.data.data.captcha);
+        if (res.code == 200) {
+          this.$message.success("短信验证码是:" + res.data.captcha);
         }
       });
     },
@@ -370,15 +370,15 @@ export default {
             rcode:this.registerForm.rcode,
           }).then(res=>{
             // window.console.log(res)
-            if(res.data.code===200){
+            if(res.code===200){
               this.$message.success("注册成功,请登录");
               //清空表单
               this.$refs.registerForm.resetFields();
               this.imageUrl = "";
               // 关闭弹框
               this.dialogFormVisible = false
-            }else if(res.data.code===201){
-              this.$message.warning(res.data.message);
+            }else if(res.code===201){
+              this.$message.warning(res.message);
             }
           })
         } else {

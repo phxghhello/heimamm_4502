@@ -13,14 +13,18 @@
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="subjectForm.status" placeholder="请选择状态" class="long-input">
-            <el-option label="禁用" value="0"></el-option>
-            <el-option label="启用" value="1"></el-option>
+            <el-option label="禁用" :value="0"></el-option>
+            <el-option label="启用" :value="1"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary">搜索</el-button>
           <el-button>清除</el-button>
-          <el-button type="primary" icon="el-icon-plus" @click="$refs.subjectDialog.addDialogFormVisible=true">新增学科</el-button>
+          <el-button
+            type="primary"
+            icon="el-icon-plus"
+            @click="$refs.subjectDialog.addDialogFormVisible=true"
+          >新增学科</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -31,9 +35,20 @@
         <el-table-column prop="name" label="学科名称"></el-table-column>
         <el-table-column prop="short_name" label="简称"></el-table-column>
         <el-table-column prop="username" label="创建者"></el-table-column>
-        <el-table-column prop="date" label="创建日期"></el-table-column>
-        <el-table-column prop="status" label="状态"></el-table-column>
-        <el-table-column label="操作"></el-table-column>
+        <el-table-column prop="create_time" label="创建日期"></el-table-column>
+        <el-table-column prop="status" label="状态">
+          <template slot-scope="scope">
+            <span v-if="scope.row.status === 1">启用</span>
+            <span v-else class="red">禁用</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-button type="text">编辑</el-button>
+            <el-button type="text" @click="changeStatus(scope.row)">{{ scope.row.status===0?"启用":"禁用" }}</el-button>
+            <el-button type="text">删除</el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <el-pagination
         class="my-pagination"
@@ -44,7 +59,7 @@
         :page-size="limit"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
-        background 
+        background
       ></el-pagination>
     </el-card>
     <!-- 新增学科框 -->
@@ -54,32 +69,65 @@
 
 <script>
 //导入学科新增框
-import subjectDialog from './components/subjectDialog.vue'
-
+import subjectDialog from "./components/subjectDialog.vue";
+//导入api
+import { subjectList,subjectStatus } from "@/api/subject.js";
 export default {
-  name:"subject",
-  components:{
-    subjectDialog,
+  name: "subject",
+  components: {
+    subjectDialog
   },
   data() {
     return {
-      subjectForm: {},
+      subjectForm: {
+        rid: "",
+        name: "",
+        username: "",
+        status: ""
+      },
       subjectTable: [],
-      page:1,
-      limit:5,
-      total:0,
+      page: 1,
+      limit: 5,
+      total: 0
     };
   },
   methods: {
+    //获取学科列表
+    getList() {
+      subjectList({
+        page: this.page,
+        limit: this.limit,
+        ...this.subjectForm
+      }).then(res => {
+        window.console.log(res);
+        if (res.code === 200) {
+          this.subjectTable = res.data.items;
+        }
+      });
+    },
+    //修改状态
+    changeStatus(item){
+      subjectStatus({
+        id:item.id
+      }).then(res=>{
+        if(res.code===200){
+          this.$message.success("修改成功");
+          this.getList();
+        }
+      })
+    },
     // 页容量改变
-    handleSizeChange(limit){
-      window.console.log("页容量"+limit)
+    handleSizeChange(limit) {
+      window.console.log("页容量" + limit);
     },
     //当前页改变
-    handleCurrentChange(page){
-      window.console.log("当前页面"+page)
+    handleCurrentChange(page) {
+      window.console.log("当前页面" + page);
     }
   },
+  created() {
+    this.getList();
+  }
 };
 </script>
 
@@ -94,8 +142,11 @@ export default {
   .main-card {
     margin-top: 30px;
     text-align: center;
-    .my-pagination{
+    .my-pagination {
       margin-top: 30px;
+    }
+    span.red{
+      color:red;
     }
   }
 }
