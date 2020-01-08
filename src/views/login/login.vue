@@ -455,14 +455,6 @@ export default {
       margin-top: 28px;
     }
   }
-  // 对话框
-  .el-dialog__header {
-    background: linear-gradient(to right, rgba(1, 198, 250, 1), rgba(20, 147, 250, 1));
-  }
-  // 对话框的颜色
-  .el-dialog__title {
-    color: white;
-  }
 
   // 验证码的样式
   // 栅格 验证码

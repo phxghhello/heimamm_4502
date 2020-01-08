@@ -20,7 +20,7 @@
         <el-form-item>
           <el-button type="primary">搜索</el-button>
           <el-button>清除</el-button>
-          <el-button type="primary" icon="el-icon-plus">新增学科</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="$refs.subjectDialog.addDialogFormVisible=true">新增学科</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -47,11 +47,19 @@
         background 
       ></el-pagination>
     </el-card>
+    <!-- 新增学科框 -->
+    <subjectDialog ref="subjectDialog"></subjectDialog>
   </div>
 </template>
 
 <script>
+import subjectDialog from './components/subjectDialog.vue'
+
 export default {
+  name:"subject",
+  components:{
+    subjectDialog,
+  },
   data() {
     return {
       subjectForm: {},
