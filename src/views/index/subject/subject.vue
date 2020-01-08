@@ -46,7 +46,7 @@
           <template slot-scope="scope">
             <el-button type="text">编辑</el-button>
             <el-button type="text" @click="changeStatus(scope.row)">{{ scope.row.status===0?"启用":"禁用" }}</el-button>
-            <el-button type="text">删除</el-button>
+            <el-button type="text" @click="removeSubject(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -71,7 +71,7 @@
 //导入学科新增框
 import subjectDialog from "./components/subjectDialog.vue";
 //导入api
-import { subjectList,subjectStatus } from "@/api/subject.js";
+import { subjectList,subjectStatus,subjectRemove } from "@/api/subject.js";
 export default {
   name: "subject",
   components: {
@@ -102,6 +102,7 @@ export default {
         window.console.log(res);
         if (res.code === 200) {
           this.subjectTable = res.data.items;
+          this.total=res.data.pagination.total;
         }
       });
     },
@@ -116,13 +117,34 @@ export default {
         }
       })
     },
+    //删除学科
+    removeSubject(item){
+      this.$confirm('确定要删除该行数据吗?', '友情提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        //点击了确定
+        subjectRemove({
+          id:item.id
+        }).then(res=>{
+          if(res.code===200){
+            this.$message.success("删除成功");
+            this.getList();
+          }
+        })
+      }).catch(() => {});
+    },
     // 页容量改变
     handleSizeChange(limit) {
-      window.console.log("页容量" + limit);
+      this.limit=limit;
+      this.page=1;
+      this.getList();
     },
     //当前页改变
     handleCurrentChange(page) {
-      window.console.log("当前页面" + page);
+      this.page=page;
+      this.getList()
     }
   },
   created() {
