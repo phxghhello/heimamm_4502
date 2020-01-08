@@ -1,25 +1,25 @@
 <template>
   <div class="subject-container">
     <el-card class="header-card">
-      <el-form :inline="true" :model="subjectForm" class="demo-form-inline">
-        <el-form-item label="学科编号">
+      <el-form :inline="true" :model="subjectForm" ref="subjectForm" class="demo-form-inline">
+        <el-form-item label="学科编号" prop="rid">
           <el-input v-model="subjectForm.rid" class="short-input"></el-input>
         </el-form-item>
-        <el-form-item label="学科名称">
+        <el-form-item label="学科名称" prop="name">
           <el-input v-model="subjectForm.name" class="long-input"></el-input>
         </el-form-item>
-        <el-form-item label="创建者">
+        <el-form-item label="创建者" prop="username">
           <el-input v-model="subjectForm.username" class="short-input"></el-input>
         </el-form-item>
-        <el-form-item label="状态">
+        <el-form-item label="状态" prop="status">
           <el-select v-model="subjectForm.status" placeholder="请选择状态" class="long-input">
             <el-option label="禁用" :value="0"></el-option>
             <el-option label="启用" :value="1"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">搜索</el-button>
-          <el-button>清除</el-button>
+          <el-button type="primary" @click="searchData">搜索</el-button>
+          <el-button @click="clearData">清除</el-button>
           <el-button
             type="primary"
             icon="el-icon-plus"
@@ -44,7 +44,7 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text">编辑</el-button>
+            <el-button type="text" @click="editSubject(scope.row)">编辑</el-button>
             <el-button type="text" @click="changeStatus(scope.row)">{{ scope.row.status===0?"启用":"禁用" }}</el-button>
             <el-button type="text" @click="removeSubject(scope.row)">删除</el-button>
           </template>
@@ -64,18 +64,21 @@
     </el-card>
     <!-- 新增学科框 -->
     <subjectDialog ref="subjectDialog"></subjectDialog>
+    <subjectEditDialog ref="subjectEditDialog"></subjectEditDialog>
   </div>
 </template>
 
 <script>
 //导入学科新增框
 import subjectDialog from "./components/subjectDialog.vue";
+import subjectEditDialog from "./components/subjectEditDialog.vue";
 //导入api
 import { subjectList,subjectStatus,subjectRemove } from "@/api/subject.js";
 export default {
   name: "subject",
   components: {
-    subjectDialog
+    subjectDialog,
+    subjectEditDialog
   },
   data() {
     return {
@@ -134,6 +137,19 @@ export default {
           }
         })
       }).catch(() => {});
+    },
+    //查询功能
+    searchData(){
+      this.getList()
+    },
+    //清除功能
+    clearData(){
+      this.$refs.subjectForm.resetFields();
+    },
+    //编辑
+    editSubject(item){
+      this.$refs.subjectEditDialog.editDialogFormVisible=true;
+      this.$refs.subjectEditDialog.editForm=JSON.parse(JSON.stringify(item));
     },
     // 页容量改变
     handleSizeChange(limit) {
