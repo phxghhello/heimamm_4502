@@ -46,7 +46,7 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text">编辑</el-button>
+            <el-button type="text" @click="editEnterprise(scope.row)">编辑</el-button>
             <el-button
               type="text"
               @click="changeState(scope.row)"
@@ -70,6 +70,8 @@
     </el-card>
     <!-- 新增框 -->
     <addDialog ref="addDialog"></addDialog>
+    <!-- 编辑框 -->
+    <editDialog ref="editDialog"></editDialog>
   </div>
 </template>
 
@@ -82,11 +84,13 @@ import {
 } from "@/api/enterprise.js";
 //导入新增框
 import addDialog from "./components/addDialog.vue";
+import editDialog from "./components/editDialog.vue";
 
 export default {
   name: "enterprise",
   components: {
-    addDialog
+    addDialog,
+    editDialog
   },
   data() {
     return {
@@ -157,6 +161,11 @@ export default {
           this.getList();
         }
       });
+    },
+    //编辑企业
+    editEnterprise(item){
+      this.$refs.editDialog.dialogFormVisible=true;
+      this.$refs.editDialog.editForm = JSON.parse(JSON.stringify(item));
     },
     // 改变页容量
     handleSizeChange(newSize) {
