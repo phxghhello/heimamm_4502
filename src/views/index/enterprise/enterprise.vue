@@ -2,25 +2,25 @@
   <div class="enterprise-container">
     <!-- 头部 -->
     <el-card class="header-card">
-      <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item label="企业编号">
+      <el-form :inline="true" ref="enterpriseForm" :model="formInline" class="demo-form-inline">
+        <el-form-item label="企业编号" prop="eid">
           <el-input class="short-input" v-model="formInline.eid"></el-input>
         </el-form-item>
-        <el-form-item label="企业名称">
+        <el-form-item label="企业名称" prop="name">
           <el-input class="long-input" v-model="formInline.name"></el-input>
         </el-form-item>
-        <el-form-item label="创建者">
+        <el-form-item label="创建者" prop="username">
           <el-input class="short-input" v-model="formInline.username"></el-input>
         </el-form-item>
-        <el-form-item label="状态">
+        <el-form-item label="状态" prop="status">
           <el-select class="long-input" v-model="formInline.status" placeholder="请选择状态">
             <el-option label="启用" value="1"></el-option>
             <el-option label="禁用" value="0"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">搜索</el-button>
-          <el-button>清除</el-button>
+          <el-button type="primary" @click="searchData">搜索</el-button>
+          <el-button @click="clear">清除</el-button>
           <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.dialogFormVisible=true">新增企业</el-button>
         </el-form-item>
       </el-form>
@@ -36,7 +36,7 @@
         <el-table-column prop="create_time" label="创建日期"></el-table-column>
         <el-table-column prop="status" label="状态">
           <template slot-scope="scope">
-            <span v-if="scope.row.status==='1'">启用</span>
+            <span v-if="scope.row.status=='1'">启用</span>
             <span v-else class="red">禁用</span>
           </template>
         </el-table-column>
@@ -108,6 +108,16 @@ export default {
           this.total= res.data.pagination.total;
         }
       })
+    },
+    //搜索功能
+    searchData(){
+      this.page=1;
+      this.getList();
+    },
+    //清除功能
+    clear(){
+      this.$refs.enterpriseForm.resetFields();
+      this.getList();
     },
     // 改变页容量
     handleSizeChange(newSize){
