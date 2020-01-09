@@ -1,13 +1,113 @@
 <template>
-  <div>企业列表</div>
+  <div class="enterprise-container">
+    <!-- 头部 -->
+    <el-card class="header-card">
+      <el-form :inline="true" :model="formInline" class="demo-form-inline">
+        <el-form-item label="企业编号">
+          <el-input class="short-input" v-model="formInline.user"></el-input>
+        </el-form-item>
+        <el-form-item label="企业名称">
+          <el-input class="long-input" v-model="formInline.user"></el-input>
+        </el-form-item>
+        <el-form-item label="创建者">
+          <el-input class="short-input" v-model="formInline.user"></el-input>
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select class="long-input" v-model="formInline.region" placeholder="请选择状态">
+            <el-option label="启用" value="1"></el-option>
+            <el-option label="禁用" value="0"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary">搜索</el-button>
+          <el-button>清除</el-button>
+          <el-button type="primary" icon="el-icon-plus">新增企业</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+    <!-- 身体 -->
+    <el-card class="main-card">
+      <!-- 表格 -->
+      <el-table :data="tableData" style="width: 100%">
+        <el-table-column type="index" label="序号" width="180"></el-table-column>
+        <el-table-column prop="name" label="企业编号" width="180"></el-table-column>
+        <el-table-column prop="address" label="企业名称"></el-table-column>
+        <el-table-column prop="address" label="创建者"></el-table-column>
+        <el-table-column prop="address" label="创建日期"></el-table-column>
+        <el-table-column prop="address" label="状态">
+          <template slot-scope="scope">
+            <span v-if="scope.row.status==='1'">启用</span>
+            <span v-else class="red">禁用</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="address" label="操作">
+          <template slot-scope="scope">
+            <el-button type="text">编辑</el-button>
+            <el-button type="text">{{scope.row.status=='1'?'禁用':'启用'}}</el-button>
+            <el-button type="text">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- 分页器 -->
+      <el-pagination
+        class="my-pagination"
+        background
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="page"
+        :page-sizes="pageSizes"
+        :page-size="size"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      ></el-pagination>
+    </el-card>
+  </div>
 </template>
 
 <script>
 export default {
-
-}
+  name: "enterprise",
+  data() {
+    return {
+      formInline: {},
+      tableData: [],
+      //分页器的数据
+      page:1,
+      pageSizes:[3,4,5,6],
+      size:3,
+      total:0
+    };
+  },
+  methods: {
+    // 改变页容量
+    handleSizeChange(newSize){
+      window.console.log(newSize)
+    },
+    //改变当前页码
+    handleCurrentChange(newPage){
+      window.console.log(newPage)
+    }
+  },
+};
 </script>
 
-<style>
-
+<style lang="less">
+.enterprise-container {
+  .short-input {
+    width: 100px;
+  }
+  .long-input {
+    width: 150px;
+  }
+  .main-card {
+    margin-top: 30px;
+    text-align: center;
+    .my-pagination {
+      margin-top: 30px;
+    }
+    span.red {
+      color: red;
+    }
+  }
+}
 </style>
