@@ -21,7 +21,11 @@
         <el-form-item>
           <el-button type="primary" @click="searchData">搜索</el-button>
           <el-button @click="clear">清除</el-button>
-          <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.dialogFormVisible=true">新增企业</el-button>
+          <el-button
+            type="primary"
+            icon="el-icon-plus"
+            @click="$refs.addDialog.dialogFormVisible=true"
+          >新增企业</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -43,7 +47,10 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="text">编辑</el-button>
-            <el-button type="text">{{scope.row.status=='1'?'禁用':'启用'}}</el-button>
+            <el-button
+              type="text"
+              @click="changeState(scope.row)"
+            >{{scope.row.status=='1'?'禁用':'启用'}}</el-button>
             <el-button type="text" @click="removeEnterprise(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -63,94 +70,109 @@
     </el-card>
     <!-- 新增框 -->
     <addDialog ref="addDialog"></addDialog>
-
   </div>
 </template>
 
 <script>
 //导入接口
-import {enterpriseList,enterpriseRemove} from '@/api/enterprise.js'
+import {
+  enterpriseList,
+  enterpriseRemove,
+  enterpriseStatus
+} from "@/api/enterprise.js";
 //导入新增框
-import addDialog from './components/addDialog.vue'
+import addDialog from "./components/addDialog.vue";
 
 export default {
   name: "enterprise",
-  components:{
+  components: {
     addDialog
   },
   data() {
     return {
       formInline: {
-        eid:"",
-        name:"",
-        username:"",
-        status:"",
+        eid: "",
+        name: "",
+        username: "",
+        status: ""
       },
       tableData: [],
       //分页器的数据
-      page:1,
-      pageSizes:[3,4,5,6],
-      size:3,
-      total:0
+      page: 1,
+      pageSizes: [3, 4, 5, 6],
+      size: 3,
+      total: 0
     };
   },
   methods: {
     //获取数据列表的方法
-    getList(){
+    getList() {
       enterpriseList({
-        page:this.page,
-        limit:this.size,
-        ...this.formInline,
-      }).then(res=>{
-        if (res.code===200) {
-          this.tableData=res.data.items;
-          this.total= res.data.pagination.total;
+        page: this.page,
+        limit: this.size,
+        ...this.formInline
+      }).then(res => {
+        if (res.code === 200) {
+          this.tableData = res.data.items;
+          this.total = res.data.pagination.total;
         }
-      })
+      });
     },
     //搜索功能
-    searchData(){
-      this.page=1;
+    searchData() {
+      this.page = 1;
       this.getList();
     },
     //清除功能
-    clear(){
+    clear() {
       this.$refs.enterpriseForm.resetFields();
       this.getList();
     },
     //删除功能
-    removeEnterprise(item){
-      this.$confirm('确定删除吗?', '友情提示', {
-        confirmButtonText: '删除',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        enterpriseRemove({
-          id:item.id
-        }).then(res=>{
-          window.console.log(res)
-          if (res.code===200) {
-            this.$message.success("删除成功");
-            this.getList();
-          }
+    removeEnterprise(item) {
+      this.$confirm("确定删除吗?", "友情提示", {
+        confirmButtonText: "删除",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          enterpriseRemove({
+            id: item.id
+          }).then(res => {
+            if (res.code === 200) {
+              this.$message.success("删除成功");
+              this.getList();
+            }
+          });
         })
-      }).catch(() => {});
+        .catch(() => {});
+    },
+    //修改状态
+    changeState(item) {
+      enterpriseStatus({
+        id: item.id
+      }).then(res => {
+        if (res.code === 200) {
+          this.$message.success("状态更新成功");
+          this.getList();
+        }
+      });
     },
     // 改变页容量
-    handleSizeChange(newSize){
+    handleSizeChange(newSize) {
       this.size = newSize;
       this.page = 1;
       this.getList();
     },
     //改变当前页码
-    handleCurrentChange(newPage){
-      this.page=newPage;
+    handleCurrentChange(newPage) {
+      this.page = newPage;
       this.getList();
     }
   },
   created() {
-    this.getList()
-  },
+    this.getList();
+  }
 };
 </script>
 
