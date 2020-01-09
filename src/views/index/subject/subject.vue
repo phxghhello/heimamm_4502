@@ -35,7 +35,11 @@
         <el-table-column prop="name" label="学科名称"></el-table-column>
         <el-table-column prop="short_name" label="简称"></el-table-column>
         <el-table-column prop="username" label="创建者"></el-table-column>
-        <el-table-column prop="create_time" label="创建日期"></el-table-column>
+        <el-table-column prop="create_time" label="创建日期">
+          <template slot-scope="scope">
+            {{scope.row.create_time | formatTime}}
+          </template>
+        </el-table-column>
         <el-table-column prop="status" label="状态">
           <template slot-scope="scope">
             <span v-if="scope.row.status === 1">启用</span>
@@ -45,7 +49,10 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="text" @click="editSubject(scope.row)">编辑</el-button>
-            <el-button type="text" @click="changeStatus(scope.row)">{{ scope.row.status===0?"启用":"禁用" }}</el-button>
+            <el-button
+              type="text"
+              @click="changeStatus(scope.row)"
+            >{{ scope.row.status===0?"启用":"禁用" }}</el-button>
             <el-button type="text" @click="removeSubject(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -73,7 +80,7 @@
 import subjectDialog from "./components/subjectDialog.vue";
 import subjectEditDialog from "./components/subjectEditDialog.vue";
 //导入api
-import { subjectList,subjectStatus,subjectRemove } from "@/api/subject.js";
+import { subjectList, subjectStatus, subjectRemove } from "@/api/subject.js";
 export default {
   name: "subject",
   components: {
@@ -105,62 +112,69 @@ export default {
         window.console.log(res);
         if (res.code === 200) {
           this.subjectTable = res.data.items;
-          this.total=res.data.pagination.total;
+          this.total = res.data.pagination.total;
         }
       });
     },
     //修改状态
-    changeStatus(item){
+    changeStatus(item) {
       subjectStatus({
-        id:item.id
-      }).then(res=>{
-        if(res.code===200){
+        id: item.id
+      }).then(res => {
+        if (res.code === 200) {
           this.$message.success("修改成功");
           this.getList();
         }
-      })
+      });
     },
     //删除学科
-    removeSubject(item){
-      this.$confirm('确定要删除该行数据吗?', '友情提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        //点击了确定
-        subjectRemove({
-          id:item.id
-        }).then(res=>{
-          if(res.code===200){
-            this.$message.success("删除成功");
-            this.getList();
-          }
+    removeSubject(item) {
+      this.$confirm("确定要删除该行数据吗?", "友情提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          //点击了确定
+          subjectRemove({
+            id: item.id
+          }).then(res => {
+            if (res.code === 200) {
+              this.$message.success("删除成功");
+              if (this.subjectTable.length === 1) {
+                this.page--;
+                this.page=this.page==0?1:this.page;
+              }
+              this.getList();
+            }
+          });
         })
-      }).catch(() => {});
+        .catch(() => {});
     },
     //查询功能
-    searchData(){
-      this.getList()
+    searchData() {
+      this.page = 1;
+      this.getList();
     },
     //清除功能
-    clearData(){
+    clearData() {
       this.$refs.subjectForm.resetFields();
     },
     //编辑
-    editSubject(item){
-      this.$refs.subjectEditDialog.editDialogFormVisible=true;
-      this.$refs.subjectEditDialog.editForm=JSON.parse(JSON.stringify(item));
+    editSubject(item) {
+      this.$refs.subjectEditDialog.editDialogFormVisible = true;
+      this.$refs.subjectEditDialog.editForm = JSON.parse(JSON.stringify(item));
     },
     // 页容量改变
     handleSizeChange(limit) {
-      this.limit=limit;
-      this.page=1;
+      this.limit = limit;
+      this.page = 1;
       this.getList();
     },
     //当前页改变
     handleCurrentChange(page) {
-      this.page=page;
-      this.getList()
+      this.page = page;
+      this.getList();
     }
   },
   created() {
@@ -183,8 +197,8 @@ export default {
     .my-pagination {
       margin-top: 30px;
     }
-    span.red{
-      color:red;
+    span.red {
+      color: red;
     }
   }
 }

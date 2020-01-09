@@ -62,7 +62,9 @@ export default {
               this.$message.success("新增成功");
               //清空表单
               this.$refs.addForm.resetFields();
+              //关闭新增框
               this.addDialogFormVisible = false;
+              //重新获取数据刷新页面
               this.$parent.getList();
             } else if (res.code === 201) {
               this.$message.warning("学科编号不能重复");
