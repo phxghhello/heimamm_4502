@@ -21,7 +21,7 @@
         <el-form-item>
           <el-button type="primary">搜索</el-button>
           <el-button>清除</el-button>
-          <el-button type="primary" icon="el-icon-plus">新增企业</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.dialogFormVisible=true">新增企业</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -61,12 +61,21 @@
         :total="total"
       ></el-pagination>
     </el-card>
+    <!-- 新增框 -->
+    <addDialog ref="addDialog"></addDialog>
+
   </div>
 </template>
 
 <script>
+//导入新增框
+import addDialog from './components/addDialog.vue'
+
 export default {
   name: "enterprise",
+  components:{
+    addDialog
+  },
   data() {
     return {
       formInline: {},

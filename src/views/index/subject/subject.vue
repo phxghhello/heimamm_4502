@@ -97,7 +97,7 @@ export default {
       },
       subjectTable: [],
       page: 1,
-      limit: 5,
+      limit: 3,
       total: 0
     };
   },
@@ -159,6 +159,7 @@ export default {
     //清除功能
     clearData() {
       this.$refs.subjectForm.resetFields();
+      this.getList();
     },
     //编辑
     editSubject(item) {
