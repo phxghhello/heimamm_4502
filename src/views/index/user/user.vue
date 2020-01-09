@@ -18,8 +18,8 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">搜索</el-button>
-          <el-button>清除</el-button>
+          <el-button type="primary" @click="searchData">搜索</el-button>
+          <el-button @click="clear">清除</el-button>
           <el-button
             type="primary"
             icon="el-icon-plus"
@@ -36,7 +36,14 @@
         <el-table-column prop="username" label="用户名" width="180"></el-table-column>
         <el-table-column prop="phone" label="电话"></el-table-column>
         <el-table-column prop="email" label="邮箱"></el-table-column>
-        <el-table-column prop="role_id" label="角色"></el-table-column>
+        <el-table-column prop="role_id" label="角色">
+          <template slot-scope="scope">
+            <span v-if="scope.row.role_id===1">超级管理员</span>
+            <span v-else-if="scope.row.role_id===2">管理员</span>
+            <span v-else-if="scope.row.role_id===3">老师</span>
+            <span v-else>学生</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="remark" label="备注"></el-table-column>
         <el-table-column prop="status" label="状态"></el-table-column>
         <el-table-column label="操作">
@@ -94,28 +101,37 @@ export default {
         limit: this.size,
         ...this.formInline
       }).then(res => {
-        window.console.log(res);
         if (res.code === 200) {
           this.tableData = res.data.items;
           this.total = res.data.pagination.total;
         }
       });
     },
+    //搜索功能
+    searchData() {
+      this.page = 1;
+      this.getList();
+    },
+    //清除功能
+    clear(){
+      this.$refs.userForm.resetFields();
+      this.getList();
+    },
     // 改变页容量
     handleSizeChange(newSize) {
       this.size = newSize;
       this.page = 1;
-      this.getList()
+      this.getList();
     },
     //改变当前页码
     handleCurrentChange(newPage) {
       this.page = newPage;
-      this.getList()
+      this.getList();
     }
   },
   created() {
     this.getList();
-  },
+  }
 };
 </script>
 
