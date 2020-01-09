@@ -111,7 +111,7 @@ export default {
               this.$message.success("新增成功");
               this.dialogFormVisible = false;
               this.$refs.addForm.resetFields();
-            //   this.$parent.getList();
+              this.$parent.getList();
             }else if(res.code === 201){
                return this.$message.warning(res.message);
             }

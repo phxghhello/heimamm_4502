@@ -149,6 +149,10 @@ export default {
           }).then(res => {
             if (res.code === 200) {
               this.$message.success("删除成功");
+                if (this.tableData.length === 1) {
+                this.page--;
+                this.page=this.page==0?1:this.page;
+              }
               this.getList();
             }
           });
