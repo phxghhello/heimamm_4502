@@ -44,7 +44,7 @@
           <template slot-scope="scope">
             <el-button type="text">编辑</el-button>
             <el-button type="text">{{scope.row.status=='1'?'禁用':'启用'}}</el-button>
-            <el-button type="text">删除</el-button>
+            <el-button type="text" @click="removeEnterprise(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -69,7 +69,7 @@
 
 <script>
 //导入接口
-import {enterpriseList} from '@/api/enterprise.js'
+import {enterpriseList,enterpriseRemove} from '@/api/enterprise.js'
 //导入新增框
 import addDialog from './components/addDialog.vue'
 
@@ -102,7 +102,6 @@ export default {
         limit:this.size,
         ...this.formInline,
       }).then(res=>{
-        window.console.log(res)
         if (res.code===200) {
           this.tableData=res.data.items;
           this.total= res.data.pagination.total;
@@ -118,6 +117,24 @@ export default {
     clear(){
       this.$refs.enterpriseForm.resetFields();
       this.getList();
+    },
+    //删除功能
+    removeEnterprise(item){
+      this.$confirm('确定删除吗?', '友情提示', {
+        confirmButtonText: '删除',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        enterpriseRemove({
+          id:item.id
+        }).then(res=>{
+          window.console.log(res)
+          if (res.code===200) {
+            this.$message.success("删除成功");
+            this.getList();
+          }
+        })
+      }).catch(() => {});
     },
     // 改变页容量
     handleSizeChange(newSize){
