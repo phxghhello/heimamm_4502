@@ -38,10 +38,10 @@
         <el-table-column prop="email" label="邮箱"></el-table-column>
         <el-table-column prop="role_id" label="角色">
           <template slot-scope="scope">
-            <span v-if="scope.row.role_id===1">超级管理员</span>
-            <span v-else-if="scope.row.role_id===2">管理员</span>
-            <span v-else-if="scope.row.role_id===3">老师</span>
-            <span v-else>学生</span>
+            <span v-if="scope.row.role_id===1">🦁 超级管理员</span>
+            <span v-else-if="scope.row.role_id===2">🐯 管理员</span>
+            <span v-else-if="scope.row.role_id===3">🐧 老师</span>
+            <span v-else>🐸 学生</span>
           </template>
         </el-table-column>
         <el-table-column prop="remark" label="备注"></el-table-column>
@@ -53,7 +53,7 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text">编辑</el-button>
+            <el-button type="text" @click="editUser(scope.row)">编辑</el-button>
             <el-button type="text" @click="changeStatus(scope.row)">{{scope.row.status=='1'?'禁用':'启用'}}</el-button>
             <el-button type="text" @click="removeUser(scope.row)">删除</el-button>
           </template>
@@ -74,15 +74,18 @@
     </el-card>
     <!-- 新增框 -->
     <addDialog ref="addDialog"></addDialog>
+    <!-- 编辑框 -->
+    <editDialog ref="editDialog"></editDialog>
   </div>
 </template>
 
 <script>
 import { userList,userRemove,userStatus } from "@/api/user.js";
 import addDialog from "./components/addDialog.vue";
+import editDialog from "./components/editDialog.vue";
 export default {
   name: "user",
-  components: { addDialog },
+  components: { addDialog,editDialog },
   data() {
     return {
       formInline: {
@@ -153,6 +156,11 @@ export default {
           this.getList();
         }
       })
+    },
+    //编辑用户
+    editUser(item){
+      this.$refs.editDialog.dialogFormVisible=true;
+      this.$refs.editDialog.editForm = JSON.parse(JSON.stringify(item))
     },
     // 改变页容量
     handleSizeChange(newSize) {
