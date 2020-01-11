@@ -9,8 +9,8 @@
       </div>
       <!-- 右侧 -->
       <div class="right">
-        <img class="avatar" :src="userInfo.avatar" alt />
-        <span class="username">{{ userInfo.username }},您好😃</span>
+        <img class="avatar" :src="avatar" alt />
+        <span class="username">{{ username }},您好😃</span>
         <el-button size="small" @click="logout" type="primary">退出</el-button>
       </div>
     </el-header>
@@ -23,24 +23,24 @@
           :collapse="collapse"
           router
         >
-          <el-menu-item index="/index/chart">
+          <el-menu-item v-if="['超级管理员','管理员','老师'].includes(role)" index="/index/chart">
             <!-- e-charts -->
             <i class="el-icon-pie-chart"></i>
             <span slot="title">数据概览</span>
           </el-menu-item>
-          <el-menu-item index="/index/user">
+          <el-menu-item v-if="['超级管理员','管理员'].includes(role)" index="/index/user">
             <i class="el-icon-user"></i>
             <span slot="title">用户列表</span>
           </el-menu-item>
-          <el-menu-item index="/index/question">
+          <el-menu-item v-if="['超级管理员','管理员','老师'].includes(role)" index="/index/question">
             <i class="el-icon-edit-outline"></i>
             <span slot="title">题库列表</span>
           </el-menu-item>
-          <el-menu-item index="/index/enterprise">
+          <el-menu-item v-if="['超级管理员','管理员','老师'].includes(role)" index="/index/enterprise">
             <i class="el-icon-office-building"></i>
             <span slot="title">企业列表</span>
           </el-menu-item>
-          <el-menu-item index="/index/subject">
+          <el-menu-item v-if="['超级管理员','管理员','老师','学生'].includes(role)" index="/index/subject">
             <i class="el-icon-notebook-2"></i>
             <span slot="title">学科列表</span>
           </el-menu-item>
@@ -55,14 +55,13 @@
 
 <script>
 // 导入api方法
-import { info, logout } from "../../api/login.js";
+import { logout } from "../../api/login.js";
 //导入token
 import { removeToken } from "../../utils/token.js";
 export default {
   name: "index",
   data() {
     return {
-      userInfo: {},
       collapse: false
     };
   },
@@ -75,35 +74,28 @@ export default {
       })
         .then(() => {
           logout().then(res => {
-            if (res.data.code === 200) {
+            if (res.code === 200) {
               removeToken();
+              this.$store.state.userInfo = undefined;
               this.$router.push("/login");
             }
           });
-          // this.$message({
-          //   type: "success",
-          //   message: "退出成功!"
-          // });
-        
         })
         .catch(() => {
           // 什么也不用干
-          // this.$message({
-          //   type: "info",
-          //   message: "已取消!"
-          // });
         });
     }
   },
-  created() {
-    info().then(res => {
-      // window.console.log(res);
-      // 保存数据
-      this.userInfo = res.data;
-      // 头像没有基地址 自己拼接
-      this.userInfo.avatar =
-        process.env.VUE_APP_BASEURL + "/" + this.userInfo.avatar;
-    });
+  computed: {
+    avatar() {
+      return this.$store.state.userInfo.avatar;
+    },
+    username() {
+      return this.$store.state.userInfo.username;
+    },
+    role(){
+      return this.$store.state.userInfo.role
+    }
   }
 };
 </script>
@@ -149,13 +141,13 @@ export default {
   .my-aside {
     // background: pink;
     .el-menu-vertical-demo:not(.el-menu--collapse) {
-    width: 200px;
-    min-height: 400px;
-  }
+      width: 200px;
+      min-height: 400px;
+    }
   }
 
   .my-main {
-    background-color: #b5e4fa
+    background-color: #b5e4fa;
   }
 }
 </style>

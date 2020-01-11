@@ -50,10 +50,13 @@
             <span v-else>启用</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column v-if="['超级管理员'].includes(role)" label="操作">
           <template slot-scope="scope">
             <el-button type="text" @click="editUser(scope.row)">编辑</el-button>
-            <el-button type="text" @click="changeStatus(scope.row)">{{scope.row.status=='1'?'禁用':'启用'}}</el-button>
+            <el-button
+              type="text"
+              @click="changeStatus(scope.row)"
+            >{{scope.row.status=='1'?'禁用':'启用'}}</el-button>
             <el-button type="text" @click="removeUser(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -79,12 +82,12 @@
 </template>
 
 <script>
-import { userList,userRemove,userStatus } from "@/api/user.js";
+import { userList, userRemove, userStatus } from "@/api/user.js";
 import addDialog from "./components/addDialog.vue";
 import editDialog from "./components/editDialog.vue";
 export default {
   name: "user",
-  components: { addDialog,editDialog },
+  components: { addDialog, editDialog },
   data() {
     return {
       formInline: {
@@ -120,46 +123,48 @@ export default {
       this.getList();
     },
     //清除功能
-    clear(){
+    clear() {
       this.$refs.userForm.resetFields();
       this.getList();
     },
     //删除功能
-    removeUser(item){
-      this.$confirm('确认删除?', '友情提示', {
-        confirmButtonText: '删除',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        userRemove({
-          id:item.id
-        }).then(res=>{
-          if (res.code===200) {
-            this.$message.success("删除成功");
-            if (this.tableData.length===1) {
-              this.page--;
-              this.page= this.page==0?1:this.page;
+    removeUser(item) {
+      this.$confirm("确认删除?", "友情提示", {
+        confirmButtonText: "删除",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          userRemove({
+            id: item.id
+          }).then(res => {
+            if (res.code === 200) {
+              this.$message.success("删除成功");
+              if (this.tableData.length === 1) {
+                this.page--;
+                this.page = this.page == 0 ? 1 : this.page;
+              }
+              this.getList();
             }
-            this.getList();
-          }
+          });
         })
-      }).catch(() => {});
+        .catch(() => {});
     },
     //修改状态
-    changeStatus(item){
+    changeStatus(item) {
       userStatus({
-        id:item.id
-      }).then(res=>{
-        if (res.code===200) {
+        id: item.id
+      }).then(res => {
+        if (res.code === 200) {
           this.$message.success("修改状态成功");
           this.getList();
         }
-      })
+      });
     },
     //编辑用户
-    editUser(item){
-      this.$refs.editDialog.dialogFormVisible=true;
-      this.$refs.editDialog.editForm = JSON.parse(JSON.stringify(item))
+    editUser(item) {
+      this.$refs.editDialog.dialogFormVisible = true;
+      this.$refs.editDialog.editForm = JSON.parse(JSON.stringify(item));
     },
     // 改变页容量
     handleSizeChange(newSize) {
@@ -175,6 +180,11 @@ export default {
   },
   created() {
     this.getList();
+  },
+  computed: {
+    role() {
+      return this.$store.state.userInfo.role;
+    }
   }
 };
 </script>

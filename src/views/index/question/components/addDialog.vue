@@ -1,5 +1,5 @@
 <template>
-  <el-dialog fullscreen center title="新增试题" :visible.sync="dialogFormVisible">
+  <el-dialog @opened="opened" fullscreen center title="新增试题" :visible.sync="dialogFormVisible">
     <el-form :model="addForm" ref="addForm" :rules="rules">
       <el-form-item label="学科" prop="role_id">
         <el-select v-model="addForm.role_id" placeholder="请选择学科">
@@ -43,8 +43,7 @@
       </el-form-item>
       <el-form-item label="试题标题" prop="resource"></el-form-item>
       <!-- 富文本编辑框 -->
-        <div id="websiteEditorElem" ref="websiteEditorElem" style="height:300px;background: #f00;"></div>
-      
+      <div id="websiteEditorElem" ref="websiteEditorElem" style="height:300px;background: #f00;"></div>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -68,22 +67,23 @@ export default {
       name: ""
     };
   },
-  methods: {},
-  mounted() {
-    // wangeditor
-    this.textEditor = new E("#websiteEditorElem");
-    // this.textEditor.onchange = function () {
-    //   this.formData.phone = this.$txt.html()
-    // }
-    // 上传图片到服务器，base64形式
-    this.textEditor.customConfig.uploadImgShowBase64 = true;
-    // 隐藏网络图片
-    this.textEditor.customConfig.showLinkImg = false;
-    // 创建一个富文本编辑器
-    this.textEditor.create();
-    // 富文本内容
-    this.textEditor.txt.html();
-  },
+  methods: {
+    opened() {
+      // wangeditor
+      this.textEditor = new E("#websiteEditorElem");
+      // this.textEditor.onchange = function () {
+      //   this.formData.phone = this.$txt.html()
+      // }
+      // 上传图片到服务器，base64形式
+      this.textEditor.customConfig.uploadImgShowBase64 = true;
+      // 隐藏网络图片
+      this.textEditor.customConfig.showLinkImg = false;
+      // 创建一个富文本编辑器
+      this.textEditor.create();
+      // 富文本内容
+      this.textEditor.txt.html();
+    }
+  }
 };
 </script>
 

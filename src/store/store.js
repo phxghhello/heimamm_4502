@@ -7,11 +7,11 @@ const store = new Vuex.Store({
     state:{
         userInfo:undefined
     },
-    mutations:{
-        SETINFO(state,info){
-            state.userInfo = info;
-        }
-    }
+    // mutations:{
+    //     SETINFO(state,info){
+    //         state.userInfo = info;
+    //     }
+    // }
 })
 
 export default store

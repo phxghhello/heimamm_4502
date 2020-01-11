@@ -20,8 +20,12 @@ Vue.config.productionTip = false
 //导入过滤器
 import '@/filters/index.js'
 
+//导入vuex
+import store from '@/store/store.js'
+
 new Vue({
   render: h => h(App),
   // 挂载 注入 Vue实例
-  router
+  router,
+  store
 }).$mount('#app')

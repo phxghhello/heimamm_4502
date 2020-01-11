@@ -145,7 +145,7 @@ export default {
       codeUrl: process.env.VUE_APP_BASEURL + "/captcha?type=login",
       ruleForm: {
         phone: "",
-        password: "",
+        password: "12345678",
         code: "",
         // 是否勾选
         checked: false
@@ -163,7 +163,7 @@ export default {
         ],
         code: [
           { required: true, message: "验证码", trigger: "blur" },
-          { min: 4, max: 4, message: "长度在必须为4", trigger: "change" }
+          { min: 4, max: 4, message: "长度在必须为4", trigger: "blur" }
         ]
       },
       // 注册对话框相关
@@ -238,11 +238,11 @@ export default {
             code: this.ruleForm.code
           }).then(res => {
             window.console.log(res);
-            if (res.code === 202) {
+            if (res.code == 202) {
               // 错误
               this.$message.error(res.message);
-            } else if (res.code === 200) {
-              this.$message.success("老铁，你可算回来啦！！！");
+            } else if (res.code == 200) {
+              // this.$message.success("老铁，你可算回来啦！！！");
               // 存token
               // window.localStorage.setItem("heimammtoken",res.data.data.token)
               saveToken(res.data.token);
