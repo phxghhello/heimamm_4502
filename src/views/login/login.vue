@@ -4,13 +4,19 @@
     <div class="left">
       <!-- 标题盒子 -->
       <div class="title-box">
-        <img src="../../assets/logo.png" alt="" />
+        <img src="../../assets/logo.png" alt />
         <div class="title">黑马面面</div>
         <div class="line"></div>
         <div class="sub-title">用户登录</div>
       </div>
       <!-- 表单 -->
-      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="43px" class="demo-ruleForm login-form">
+      <el-form
+        :model="ruleForm"
+        :rules="rules"
+        ref="ruleForm"
+        label-width="43px"
+        class="demo-ruleForm login-form"
+      >
         <!-- 手机号 -->
         <el-form-item prop="phone">
           <el-input
@@ -39,7 +45,7 @@
             <el-col class="code-col" :span="6">
               <!-- 验证码 -->
               <!-- <img src="../../assets/code.jpg" alt="" /> -->
-              <img @click="changeCode" :src="codeUrl" alt="" />
+              <img @click="changeCode" :src="codeUrl" alt />
             </el-col>
           </el-row>
         </el-form-item>
@@ -47,8 +53,7 @@
         <el-form-item>
           <el-checkbox v-model="ruleForm.checked">
             我已阅读并同意
-            <el-link type="primary">用户协议</el-link>
-            和
+            <el-link type="primary">用户协议</el-link>和
             <el-link type="primary">隐私条款</el-link>
           </el-checkbox>
         </el-form-item>
@@ -59,7 +64,7 @@
       </el-form>
     </div>
     <!-- 右边的图片 -->
-    <img class="bg" src="../../assets/login_banner_ele.png" alt="" />
+    <img class="bg" src="../../assets/login_banner_ele.png" alt />
 
     <!-- 注册对话框 -->
     <el-dialog center width="603px" title="用户注册" :visible.sync="dialogFormVisible">
@@ -98,7 +103,7 @@
             </el-col>
             <el-col :offset="1" :span="7" class="code-col">
               <!-- 注册验证码 -->
-              <img @click="changeRegCode" :src="regCodeUrl" alt="" />
+              <img @click="changeRegCode" :src="regCodeUrl" alt />
             </el-col>
           </el-row>
         </el-form-item>
@@ -126,44 +131,12 @@
 // 导入 axios
 // import axios from "axios";
 // 导入抽取好的 api 方法
-import { login, sendsms,register } from "../../api/login.js";
+import { login, sendsms, register } from "../../api/login.js";
 //导入token
-import {saveToken} from "../../utils/token.js"
+import { saveToken } from "../../utils/token.js";
+//导入验证电话和邮箱的方法
+import { validatePhone, validateEmail } from "@/utils/validator.js";
 
-// 定义验证手机号的方法
-const validatePhone = (rule, value, callback) => {
-  if (value === "") {
-    callback(new Error("手机号不能为空"));
-  } else {
-    // 定义正则 正则  对象
-    const reg = /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/;
-    // 验证
-    if (reg.test(value) == true) {
-      // 对
-      callback();
-    } else {
-      // 错
-      callback(new Error("小老弟，手机号，写错了哟 O(∩_∩)O哈哈~"));
-    }
-  }
-};
-// 定义验证邮箱的方法
-const validateEmail = (rule, value, callback) => {
-  if (value === "") {
-    callback(new Error("邮箱不能为空"));
-  } else {
-    // 定义正则 正则  对象
-    const reg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
-    // 验证
-    if (reg.test(value) == true) {
-      // 对
-      callback();
-    } else {
-      // 错
-      callback(new Error("小老弟，邮箱，写错了哟 O(∩_∩)O哈哈~"));
-    }
-  }
-};
 export default {
   name: "login",
   data() {
@@ -181,7 +154,12 @@ export default {
         phone: [{ validator: validatePhone, trigger: "blur" }],
         password: [
           { required: true, message: "密码不能为空", trigger: "blur" },
-          { min: 6, max: 20, message: "长度在 6 到 20 个字符", trigger: "change" }
+          {
+            min: 6,
+            max: 20,
+            message: "长度在 6 到 20 个字符",
+            trigger: "change"
+          }
         ],
         code: [
           { required: true, message: "验证码", trigger: "blur" },
@@ -209,14 +187,22 @@ export default {
       },
       // 注册表单的 验证规则
       registerRules: {
-        avatar: [{ required: true, message: "头像不能为空", trigger: "change" }],
-        username: [{ required: true, message: "昵称不能为空", trigger: "change" }],
-        email: [{required: true, validator:validateEmail, trigger: "change" }],
-        phone: [{required: true, validator:validatePhone, trigger: "change" }],
+        avatar: [
+          { required: true, message: "头像不能为空", trigger: "change" }
+        ],
+        username: [
+          { required: true, message: "昵称不能为空", trigger: "change" }
+        ],
+        email: [
+          { required: true, validator: validateEmail, trigger: "change" }
+        ],
+        phone: [
+          { required: true, validator: validatePhone, trigger: "change" }
+        ],
         password: [
-          {required: true, message: "密码不能为空", trigger: "change" },
-          {min: 6,max:12 ,message: "密码的长度是6~12位", trigger: "change" },
-          ],
+          { required: true, message: "密码不能为空", trigger: "change" },
+          { min: 6, max: 12, message: "密码的长度是6~12位", trigger: "change" }
+        ]
       },
       // 左侧间隙
       formLabelWidth: "60px",
@@ -259,9 +245,9 @@ export default {
               this.$message.success("老铁，你可算回来啦！！！");
               // 存token
               // window.localStorage.setItem("heimammtoken",res.data.data.token)
-              saveToken(res.data.token)
+              saveToken(res.data.token);
               // 去首页
-              this.$router.push("/index")
+              this.$router.push("/index");
             }
           });
         } else {
@@ -278,11 +264,14 @@ export default {
       // 必须要有分隔符
       // this.codeUrl=process.env.VUE_APP_BASEURL+'/captcha?type=login&'+Date.now()
       // this.codeUrl=process.env.VUE_APP_BASEURL+'/captcha?type=login&'+Math.random()
-      this.codeUrl = process.env.VUE_APP_BASEURL + "/captcha?type=login&t=" + Date.now();
+      this.codeUrl =
+        process.env.VUE_APP_BASEURL + "/captcha?type=login&t=" + Date.now();
     },
     // 切换注册验证码
     changeRegCode() {
-      this.regCodeUrl = `${process.env.VUE_APP_BASEURL}/captcha?type=sendsms&t=${Date.now()}`;
+      this.regCodeUrl = `${
+        process.env.VUE_APP_BASEURL
+      }/captcha?type=sendsms&t=${Date.now()}`;
     },
     // 获取短信
     getMessage() {
@@ -339,7 +328,7 @@ export default {
       // 获取服务器返回的 地址
       // window.console.log(res.data.file_path);
       // 保存到 注册表单的 头像中
-      this.registerForm.avatar =res.file_path;
+      this.registerForm.avatar = res.file_path;
     },
     // 上传之前
     beforeAvatarUpload(file) {
@@ -355,32 +344,32 @@ export default {
       return isJPG && isLt2M;
     },
     // 提交注册
-    submitRegister(){
+    submitRegister() {
       // 验证表单
       // 等同于 this.$refs['registerForm']
-        this.$refs.registerForm.validate(valid => {
+      this.$refs.registerForm.validate(valid => {
         if (valid) {
           // 调用接口
           register({
-            username:this.registerForm.username,
-            phone:this.registerForm.phone,
-            email:this.registerForm.email,
-            avatar:this.registerForm.avatar,
-            password:this.registerForm.password,
-            rcode:this.registerForm.rcode,
-          }).then(res=>{
+            username: this.registerForm.username,
+            phone: this.registerForm.phone,
+            email: this.registerForm.email,
+            avatar: this.registerForm.avatar,
+            password: this.registerForm.password,
+            rcode: this.registerForm.rcode
+          }).then(res => {
             // window.console.log(res)
-            if(res.code===200){
+            if (res.code === 200) {
               this.$message.success("注册成功,请登录");
               //清空表单
               this.$refs.registerForm.resetFields();
               this.imageUrl = "";
               // 关闭弹框
-              this.dialogFormVisible = false
-            }else if(res.code===201){
+              this.dialogFormVisible = false;
+            } else if (res.code === 201) {
               this.$message.warning(res.message);
             }
-          })
+          });
         } else {
           this.$message.error("格式不对哦，检查一下呗！");
           return false;
@@ -397,7 +386,11 @@ export default {
   /* 侧轴方向 居中 */
   align-items: center;
   /* 线型渐变 */
-  background: linear-gradient(225deg, rgba(1, 198, 250, 1), rgba(20, 147, 250, 1));
+  background: linear-gradient(
+    225deg,
+    rgba(1, 198, 250, 1),
+    rgba(20, 147, 250, 1)
+  );
   /* 主轴方向 均分 */
   justify-content: space-around;
   height: 100%;
