@@ -11,7 +11,6 @@
         </el-form-item>
         <el-form-item label="角色" prop="role_id">
           <el-select class="long-input" v-model="formInline.role_id" placeholder="请选择角色">
-            <el-option label="超级管理员" :value="1"></el-option>
             <el-option label="管理员" :value="2"></el-option>
             <el-option label="老师" :value="3"></el-option>
             <el-option label="学生" :value="4"></el-option>
@@ -31,8 +30,8 @@
     <!-- 身体 -->
     <el-card class="main-card">
       <!-- 表格 -->
-      <el-table :data="tableData" style="width: 100%">
-        <el-table-column type="index" label="序号" width="180"></el-table-column>
+      <el-table border :data="tableData" style="width: 100%">
+        <el-table-column type="index" label="序号"></el-table-column>
         <el-table-column prop="username" label="用户名" width="180"></el-table-column>
         <el-table-column prop="phone" label="电话"></el-table-column>
         <el-table-column prop="email" label="邮箱"></el-table-column>

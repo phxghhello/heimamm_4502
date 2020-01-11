@@ -12,7 +12,6 @@
       </el-form-item>
       <el-form-item label="角色" :label-width="formLabelWidth" prop="role_id">
         <el-select v-model="addForm.role_id" placeholder="请选择角色">
-          <el-option label="超级管理员" :value="1"></el-option>
           <el-option label="管理员" :value="2"></el-option>
           <el-option label="老师" :value="3"></el-option>
           <el-option label="学生" :value="4"></el-option>
@@ -81,7 +80,7 @@ export default {
               this.$refs.addForm.resetFields();
               this.$parent.getList();
             }else if(res.code === 201){
-               return this.$message.warning(res.message);
+              return this.$message.warning(res.message);
             }
           });
         } else {
