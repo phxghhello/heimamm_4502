@@ -150,11 +150,9 @@ export default {
   },
   created() {
     subjectList().then(res=>{
-      window.console.log("学科:"+res)
       this.subjectList =  res.data.items;
     });
     enterpriseList().then(res=>{
-      window.console.log("企业:"+res)
       this.enterpriseList =  res.data.items;
     })
   },

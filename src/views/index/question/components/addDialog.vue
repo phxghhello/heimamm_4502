@@ -8,8 +8,9 @@
     :visible.sync="dialogFormVisible"
   >
     <el-form :model="addForm" ref="addForm" :rules="rules">
-      <el-form-item label="学科" prop="role_id">
-        <el-select v-model="addForm.role_id" placeholder="请选择学科">
+      <!-- 学科 -->
+      <el-form-item label="学科" prop="subject">
+        <el-select v-model="addForm.subject" placeholder="请选择学科">
           <el-option
             v-for="item in $parent.subjectList"
             :key="item.id"
@@ -18,15 +19,17 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="阶段" prop="role_id">
-        <el-select v-model="addForm.role_id" placeholder="请选择阶段">
+      <!-- 阶段 -->
+      <el-form-item label="阶段" prop="step">
+        <el-select v-model="addForm.step" placeholder="请选择阶段">
           <el-option label="初级" :value="1"></el-option>
           <el-option label="中级" :value="2"></el-option>
           <el-option label="高级" :value="3"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="企业" prop="role_id">
-        <el-select v-model="addForm.role_id" placeholder="请选择企业">
+      <!-- 企业 -->
+      <el-form-item label="企业" prop="enterprise">
+        <el-select v-model="addForm.enterprise" placeholder="请选择企业">
           <el-option
             v-for="item in  $parent.enterpriseList"
             :key="item.id"
@@ -35,7 +38,8 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="城市" prop="role_id">
+      <!-- 城市 -->
+      <el-form-item label="城市" prop="city">
         <el-cascader
           size="large"
           :options="options"
@@ -43,6 +47,7 @@
           :props="{ expandTrigger: 'hover' }"
         ></el-cascader>
       </el-form-item>
+      <!-- 题型 -->
       <el-form-item label="题型" prop="type">
         <el-radio-group v-model="addForm.type">
           <el-radio :label="1">单选</el-radio>
@@ -50,21 +55,22 @@
           <el-radio :label="3">简答</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="难度" prop="resource">
-        <el-radio-group v-model="addForm.resource">
+      <!-- 难度 -->
+      <el-form-item label="难度" prop="difficulty">
+        <el-radio-group v-model="addForm.difficulty">
           <el-radio :label="1">简单</el-radio>
           <el-radio :label="2">一般</el-radio>
           <el-radio :label="3">困难</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-divider></el-divider>
-      <el-form-item label="试题标题" prop="resource"></el-form-item>
-      <!-- 富文本编辑框 -->
+      <!-- 试题标题 -->
+      <el-form-item label="试题标题" prop="title"></el-form-item>
       <div class="title-toolbar"></div>
       <div class="title-text"></div>
       <!-- 单选 -->
-      <el-form-item label="单选" prop="resource">
-        <el-radio-group v-model="addForm.radio">
+      <el-form-item label="单选" prop="single_select_answer">
+        <el-radio-group v-model="addForm.single_select_answer">
           <!-- 选项A -->
           <div class="option-box">
             <el-radio label="A">A</el-radio>
@@ -133,7 +139,7 @@
       </el-form-item>
       <el-divider></el-divider>
       <!-- 视频解析 -->
-      <el-form-item label="试题解析" prop="video">
+      <el-form-item label="试题解析">
         <el-upload
           class="upload-demo"
           :action="uploadUrl"
@@ -147,13 +153,13 @@
         </el-upload>
       </el-form-item>
       <el-divider></el-divider>
-      <el-form-item label="答案解析" prop="answer"></el-form-item>
-      <!-- 富文本编辑框 -->
+      <!-- 答案解析 -->
+      <el-form-item label="答案解析" prop="answer_analyze"></el-form-item>
       <div class="answer-toolbar"></div>
       <div class="answer-text"></div>
       <el-divider></el-divider>
       <el-form-item label="试题备注" prop="remark"></el-form-item>
-      <el-input v-model="addForm.xxx"></el-input>
+      <el-input v-model="addForm.remark"></el-input>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -173,7 +179,17 @@ export default {
   data() {
     return {
       addForm: {
+        subject: "",
+        step: "",
+        enterprise: "",
+        type: "",
+        difficulty: "",
+        title: "",
+        single_select_answer: "",
+        answer_analyze: "",
+        short_answer: "",
         city: [],
+        remark: "",
         video: "",
         // 选项
         select_options: [
@@ -199,7 +215,28 @@ export default {
           }
         ]
       },
-      rules: {},
+      rules: {
+        subject: [
+          { required: true, message: "学科不能为空", trigger: "change" }
+        ],
+        step: [{ required: true, message: "阶段不能为空", trigger: "blur" }],
+        enterprise: [
+          { required: true, message: "企业不能为空", trigger: "blur" }
+        ],
+        city: [{ required: true, message: "城市不能为空", trigger: "blur" }],
+        type: [{ required: true, message: "题型不能为空", trigger: "blur" }],
+        difficulty: [
+          { required: true, message: "难度不能为空", trigger: "blur" }
+        ],
+        title: [{ required: true, message: "标题不能为空", trigger: "blur" }],
+        single_select_answer: [
+          { required: true, message: "单选答案不能为空", trigger: "blur" }
+        ],
+        answer_analyze: [
+          { required: true, message: "答案解析不能为空", trigger: "blur" }
+        ],
+        remark: [{ required: true, message: "备注不能为空", trigger: "blur" }]
+      },
       dialogFormVisible: false,
       formLabelWidth: "120px",
       //省市区级联
@@ -221,6 +258,7 @@ export default {
   methods: {
     // 富文本编辑器
     opened() {
+      // 通过判断让富文本的创建只执行一次
       if (this.titleEditor == undefined) {
         this.titleEditor = new Wangeditor(".title-toolbar", ".title-text");
         this.titleEditor.create();
