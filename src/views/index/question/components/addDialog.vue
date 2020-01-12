@@ -163,7 +163,7 @@
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogFormVisible = false">取 消</el-button>
-      <el-button type="primary">确 定</el-button>
+      <el-button type="primary" @click="submitAdd">确 定</el-button>
     </div>
   </el-dialog>
 </template>
@@ -173,7 +173,8 @@
 import Wangeditor from "wangeditor";
 //导入省市区级联
 import { regionData } from "element-china-area-data";
-
+//导入新增接口
+import { questionAdd } from "@/api/question.js";
 export default {
   name: "question-addDialog",
   data() {
@@ -256,15 +257,66 @@ export default {
     };
   },
   methods: {
+    submitAdd() {
+      this.$refs.addForm.validate(valid => {
+        if (valid) {
+          questionAdd(this.addForm).then(res => {
+            if (res.code==200) {
+              this.$message.success("试题新增成功")
+              //清空表单
+              this.$refs.addForm.resetFields();
+              // 清空富文本编辑器
+              this.titleEditor.txt.clear();
+              this.answerEditor.txt.clear();
+              this.dialogFormVisible=false;
+              // 清空预览的地址
+              if (this.imageAUrl!="") {
+                this.imageAUrl=""
+              }
+              if (this.imageBUrl!="") {
+                this.imageBUrl=""
+              }
+              if (this.imageCUrl!="") {
+                this.imageCUrl=""
+              }
+              if (this.imageDUrl!="") {
+                this.imageDUrl=""
+              }
+              if (this.videoUrl!="") {
+                this.videoUrl=""
+              }
+              //清空选项中的text
+              this.addForm.select_options.forEach(v => {
+                window.console.log(v.text);
+                if (v.text!="") {
+                  v.text=""
+                }
+              });
+            }
+          });
+        } else {
+          this.$message.warning("填写的信息格式不正确,请检查");
+          return false;
+        }
+      });
+    },
     // 富文本编辑器
     opened() {
       // 通过判断让富文本的创建只执行一次
       if (this.titleEditor == undefined) {
         this.titleEditor = new Wangeditor(".title-toolbar", ".title-text");
+        this.titleEditor.customConfig.onchange = html=> {
+          // html 即变化之后的内容
+          this.addForm.title = html;
+        };
         this.titleEditor.create();
       }
       if (this.answerEditor == undefined) {
         this.answerEditor = new Wangeditor(".answer-toolbar", ".answer-text");
+        this.answerEditor.customConfig.onchange = html=> {
+          // html 即变化之后的内容
+          this.addForm.answer_analyze=html;
+        };
         this.answerEditor.create();
       }
     },
@@ -308,10 +360,10 @@ export default {
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPG) {
-        this.$message.error("上传头像图片只能是 JPG或者PNG 格式!");
+        this.$message.error("上传视频只能是 MP4 格式!");
       }
       if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 2MB!");
+        this.$message.error("上传视频大小不能超过 2MB!");
       }
       return isJPG && isLt2M;
     }
