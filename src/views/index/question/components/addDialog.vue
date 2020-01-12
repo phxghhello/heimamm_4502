@@ -50,9 +50,9 @@
       <!-- 题型 -->
       <el-form-item label="题型" prop="type">
         <el-radio-group v-model="addForm.type">
-          <el-radio :label="1">单选</el-radio>
-          <el-radio :label="2">多选</el-radio>
-          <el-radio :label="3">简答</el-radio>
+          <el-radio label="1">单选</el-radio>
+          <el-radio label="2">多选</el-radio>
+          <el-radio label="3">简答</el-radio>
         </el-radio-group>
       </el-form-item>
       <!-- 难度 -->
@@ -69,7 +69,7 @@
       <div class="title-toolbar"></div>
       <div class="title-text"></div>
       <!-- 单选 -->
-      <el-form-item label="单选" prop="single_select_answer">
+      <el-form-item v-if="addForm.type == '1'" label="单选" prop="single_select_answer">
         <el-radio-group v-model="addForm.single_select_answer">
           <!-- 选项A -->
           <div class="option-box">
@@ -137,6 +137,79 @@
           </div>
         </el-radio-group>
       </el-form-item>
+      <!-- 多选 -->
+      <el-form-item v-else-if="addForm.type == '2'" label="多选" prop="multiple_select_answer">
+        <el-checkbox-group v-model="addForm.multiple_select_answer">
+          <!-- 选项A -->
+          <div class="option-box">
+            <el-checkbox label="A">A</el-checkbox>
+            <el-input class="mutiple-input" v-model="addForm.select_options[0].text"></el-input>
+            <!-- 上传组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageAUrl" :src="imageAUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+          <!-- 选项B -->
+          <div class="option-box">
+            <el-checkbox label="B">B</el-checkbox>
+            <el-input class="mutiple-input" v-model="addForm.select_options[1].text"></el-input>
+            <!-- 上传组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleBvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageBUrl" :src="imageBUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+          <!-- 选项C-->
+          <div class="option-box">
+            <el-checkbox label="C">C</el-checkbox>
+            <el-input class="mutiple-input" v-model="addForm.select_options[2].text"></el-input>
+            <!-- 上传组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleCvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageCUrl" :src="imageCUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+          <!-- 选项D -->
+          <div class="option-box">
+            <el-checkbox label="D">D</el-checkbox>
+            <el-input class="mutiple-input" v-model="addForm.select_options[3].text"></el-input>
+            <!-- 上传组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleDvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageDUrl" :src="imageDUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+        </el-checkbox-group>
+      </el-form-item>
+      <!-- 简答题 -->
+      <el-form-item v-else label="简答" prop="short_answer">
+        <el-input type="textarea" v-model="addForm.short_answer"></el-input>
+      </el-form-item>
       <el-divider></el-divider>
       <!-- 视频解析 -->
       <el-form-item label="试题解析">
@@ -183,10 +256,11 @@ export default {
         subject: "",
         step: "",
         enterprise: "",
-        type: "",
+        type: "1",
         difficulty: "",
         title: "",
         single_select_answer: "",
+        multiple_select_answer:"",
         answer_analyze: "",
         short_answer: "",
         city: [],
@@ -233,6 +307,12 @@ export default {
         single_select_answer: [
           { required: true, message: "单选答案不能为空", trigger: "blur" }
         ],
+        multiple_select_answer: [
+          { required: true, message: "单选答案不能为空", trigger: "blur" }
+        ],
+        short_answer: [
+          { required: true, message: "单选答案不能为空", trigger: "blur" }
+        ],
         answer_analyze: [
           { required: true, message: "答案解析不能为空", trigger: "blur" }
         ],
@@ -261,35 +341,35 @@ export default {
       this.$refs.addForm.validate(valid => {
         if (valid) {
           questionAdd(this.addForm).then(res => {
-            if (res.code==200) {
-              this.$message.success("试题新增成功")
+            if (res.code == 200) {
+              this.$message.success("试题新增成功");
               //清空表单
               this.$refs.addForm.resetFields();
               // 清空富文本编辑器
               this.titleEditor.txt.clear();
               this.answerEditor.txt.clear();
-              this.dialogFormVisible=false;
+              this.dialogFormVisible = false;
               // 清空预览的地址
-              if (this.imageAUrl!="") {
-                this.imageAUrl=""
+              if (this.imageAUrl != "") {
+                this.imageAUrl = "";
               }
-              if (this.imageBUrl!="") {
-                this.imageBUrl=""
+              if (this.imageBUrl != "") {
+                this.imageBUrl = "";
               }
-              if (this.imageCUrl!="") {
-                this.imageCUrl=""
+              if (this.imageCUrl != "") {
+                this.imageCUrl = "";
               }
-              if (this.imageDUrl!="") {
-                this.imageDUrl=""
+              if (this.imageDUrl != "") {
+                this.imageDUrl = "";
               }
-              if (this.videoUrl!="") {
-                this.videoUrl=""
+              if (this.videoUrl != "") {
+                this.videoUrl = "";
               }
               //清空选项中的text
               this.addForm.select_options.forEach(v => {
                 window.console.log(v.text);
-                if (v.text!="") {
-                  v.text=""
+                if (v.text != "") {
+                  v.text = "";
                 }
               });
             }
@@ -305,7 +385,7 @@ export default {
       // 通过判断让富文本的创建只执行一次
       if (this.titleEditor == undefined) {
         this.titleEditor = new Wangeditor(".title-toolbar", ".title-text");
-        this.titleEditor.customConfig.onchange = html=> {
+        this.titleEditor.customConfig.onchange = html => {
           // html 即变化之后的内容
           this.addForm.title = html;
         };
@@ -313,9 +393,9 @@ export default {
       }
       if (this.answerEditor == undefined) {
         this.answerEditor = new Wangeditor(".answer-toolbar", ".answer-text");
-        this.answerEditor.customConfig.onchange = html=> {
+        this.answerEditor.customConfig.onchange = html => {
           // html 即变化之后的内容
-          this.addForm.answer_analyze=html;
+          this.addForm.answer_analyze = html;
         };
         this.answerEditor.create();
       }
@@ -425,5 +505,9 @@ export default {
   .video {
     width: 320px;
   }
+  .mutiple-input{
+    margin:0 15px;
+  }
+  
 }
 </style>
