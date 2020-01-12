@@ -4,10 +4,8 @@
     <el-card class="header-card">
       <el-form :inline="true" ref="userForm" :model="formInline" class="demo-form-inline">
         <el-form-item label="学科" prop="role_id">
-          <el-select class="normal-input" v-model="formInline.role_id" placeholder="请选择学科">
-            <el-option label="学科1" :value="1"></el-option>
-            <el-option label="学科2" :value="2"></el-option>
-            <el-option label="学科3" :value="3"></el-option>
+          <el-select class="normal-input" v-model="formInline.subject" placeholder="请选择学科">
+            <el-option v-for="item in subjectList" :key="item.id" :label="item.short_name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="阶段" prop="role_id">
@@ -18,10 +16,8 @@
           </el-select>
         </el-form-item>
         <el-form-item label="企业" prop="role_id">
-          <el-select class="normal-input" v-model="formInline.role_id" placeholder="请选择企业">
-            <el-option label="enterprise1" :value="1"></el-option>
-            <el-option label="enterprise2" :value="2"></el-option>
-            <el-option label="enterprise3" :value="3"></el-option>
+          <el-select class="normal-input" v-model="formInline.enterprise" placeholder="请选择企业">
+            <el-option  v-for="item in enterpriseList" :key="item.id" :label="item.short_name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="题型" prop="role_id">
@@ -111,6 +107,10 @@
 </template>
 
 <script>
+//导入学科企业信息的接口
+import {subjectList} from '@/api/subject.js'
+import {enterpriseList} from '@/api/enterprise.js'
+
 import addDialog from "./components/addDialog.vue";
 export default {
   name: "question",
@@ -127,7 +127,10 @@ export default {
       page: 1,
       pageSizes: [3, 4, 5, 6],
       size: 3,
-      total: 0
+      total: 0,
+      //学科列表的数据
+      subjectList:[],
+      enterpriseList:[],
     };
   },
   methods: {
@@ -144,7 +147,17 @@ export default {
       // this.page = newPage;
       // this.getList();
     }
-  }
+  },
+  created() {
+    subjectList().then(res=>{
+      window.console.log("学科:"+res)
+      this.subjectList =  res.data.items;
+    });
+    enterpriseList().then(res=>{
+      window.console.log("企业:"+res)
+      this.enterpriseList =  res.data.items;
+    })
+  },
 };
 </script>
 
