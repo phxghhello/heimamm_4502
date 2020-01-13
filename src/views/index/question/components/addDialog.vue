@@ -1,7 +1,4 @@
 <template>
-<<<<<<< HEAD
-  <el-dialog @opened="opened" fullscreen center title="新增试题" :visible.sync="dialogFormVisible">
-=======
   <el-dialog
     class="question-addDialog"
     @opened="opened"
@@ -10,7 +7,6 @@
     title="新增试题"
     :visible.sync="dialogFormVisible"
   >
->>>>>>> question
     <el-form :model="addForm" ref="addForm" :rules="rules">
       <!-- 学科 -->
       <el-form-item label="学科" prop="subject">
@@ -67,11 +63,6 @@
           <el-radio :label="3">困难</el-radio>
         </el-radio-group>
       </el-form-item>
-<<<<<<< HEAD
-      <el-form-item label="试题标题" prop="resource"></el-form-item>
-      <!-- 富文本编辑框 -->
-      <div id="websiteEditorElem" ref="websiteEditorElem" style="height:300px;background: #f00;"></div>
-=======
       <el-divider></el-divider>
       <!-- 试题标题 -->
       <el-form-item label="试题标题" prop="title"></el-form-item>
@@ -242,7 +233,6 @@
       <el-divider></el-divider>
       <el-form-item label="试题备注" prop="remark"></el-form-item>
       <el-input v-model="addForm.remark"></el-input>
->>>>>>> question
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogFormVisible = false">取 消</el-button>
