@@ -260,7 +260,7 @@ export default {
         difficulty: "",
         title: "",
         single_select_answer: "",
-        multiple_select_answer:[],
+        multiple_select_answer:"",
         answer_analyze: "",
         short_answer: "",
         city: [],
@@ -343,8 +343,6 @@ export default {
           questionAdd(this.addForm).then(res => {
             if (res.code == 200) {
               this.$message.success("试题新增成功");
-              //刷新题库列表
-              this.$parent.getList();
               //清空表单
               this.$refs.addForm.resetFields();
               // 清空富文本编辑器
