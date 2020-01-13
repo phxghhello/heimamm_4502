@@ -33,7 +33,17 @@ Vue.use(VueRouter);
 
 // 创建路由对象
 const router = new VueRouter({
+<<<<<<< HEAD
   routes: [{
+=======
+  routes: [
+    {
+      path: "/",
+      component: login,
+      redirect:"/login",
+    },
+    {
+>>>>>>> question
       path: "/login",
       component: login
     },
