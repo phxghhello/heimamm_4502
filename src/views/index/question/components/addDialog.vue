@@ -347,22 +347,6 @@ export default {
     };
   },
   methods: {
-<<<<<<< HEAD
-    opened() {
-      // wangeditor
-      this.textEditor = new E("#websiteEditorElem");
-      // this.textEditor.onchange = function () {
-      //   this.formData.phone = this.$txt.html()
-      // }
-      // 上传图片到服务器，base64形式
-      this.textEditor.customConfig.uploadImgShowBase64 = true;
-      // 隐藏网络图片
-      this.textEditor.customConfig.showLinkImg = false;
-      // 创建一个富文本编辑器
-      this.textEditor.create();
-      // 富文本内容
-      this.textEditor.txt.html();
-=======
     submitAdd() {
       this.$refs.addForm.validate(valid => {
         if (valid) {
@@ -472,7 +456,6 @@ export default {
         this.$message.error("上传视频大小不能超过 2MB!");
       }
       return isJPG && isLt2M;
->>>>>>> question
     }
   }
 };
