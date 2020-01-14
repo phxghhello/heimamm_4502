@@ -41,9 +41,6 @@
 import echarts from 'echarts'
 import {chatTitle,enterpriseData} from '@/api/chart.js'
 export default {
-<<<<<<< HEAD
-  
-=======
   name: "chart",
   data() {
     return {
@@ -113,7 +110,6 @@ export default {
       })
     })
   },
->>>>>>> question
 };
 </script>
 
