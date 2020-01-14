@@ -114,8 +114,6 @@ export default {
 </script>
 
 <style lang="less">
-<<<<<<< HEAD
-=======
 .chart-container {
   .card-header {
     // height: 149px;
@@ -133,7 +131,6 @@ export default {
           font-size: 35px;
           text-align: center;
           line-height: 99px;
->>>>>>> question
 
           &.primary {
             border-color: #0086fa;
