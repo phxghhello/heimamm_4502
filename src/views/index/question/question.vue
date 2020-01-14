@@ -99,7 +99,7 @@
         <el-table-column prop="reads" label="访问量"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text">编辑</el-button>
+            <el-button type="text" @click="editQuestion(scope.row)">编辑</el-button>
             <el-button
               type="text"
               @click="changeStatus(scope.row)"
@@ -123,6 +123,7 @@
     </el-card>
     <!-- 新增框 -->
     <addDialog ref="addDialog"></addDialog>
+    <editDialog ref="editDialog"></editDialog>
   </div>
 </template>
 
@@ -137,9 +138,10 @@ import {
 } from "@/api/question.js";
 
 import addDialog from "./components/addDialog.vue";
+import editDialog from "./components/editDialog.vue";
 export default {
   name: "question",
-  components: { addDialog },
+  components: { addDialog, editDialog },
   data() {
     return {
       formInline: {
@@ -233,6 +235,52 @@ export default {
           });
         })
         .catch(() => {});
+    },
+    //编辑功能
+    editQuestion(item) {
+      this.$refs.editDialog.dialogFormVisible = true;
+      let editForm = JSON.parse(JSON.stringify(item));
+      editForm.city = editForm.city.split(",");
+      editForm.multiple_select_answer = editForm.multiple_select_answer.split(
+        ","
+      );
+      editForm.multiple_select_answer.sort();
+      this.$refs.editDialog.editForm = editForm;
+      // 新的选项数组
+      const options = [];
+      // 循环 把 A B C D 的顺序 调整为 正确的
+      editForm.select_options.forEach(v => {
+        if (v.label == "A") {
+          options[0] = v;
+        } else if (v.label == "B") {
+          options[1] = v;
+        } else if (v.label == "C") {
+          options[2] = v;
+        } else {
+          options[3] = v;
+        }
+      });
+      editForm.select_options = options;
+      if (editForm.select_options[0].image != "") {
+        this.$refs.editDialog.imageAUrl =
+          process.env.VUE_APP_BASEURL + "/" + editForm.select_options[0].image;
+      }
+      if (editForm.select_options[1].image != "") {
+        this.$refs.editDialog.imageBUrl =
+          process.env.VUE_APP_BASEURL + "/" + editForm.select_options[1].image;
+      }
+      if (editForm.select_options[2].image != "") {
+        this.$refs.editDialog.imageCUrl =
+          process.env.VUE_APP_BASEURL + "/" + editForm.select_options[2].image;
+      }
+      if (editForm.select_options[3].image != "") {
+        this.$refs.editDialog.imageDUrl =
+          process.env.VUE_APP_BASEURL + "/" + editForm.select_options[3].image;
+      }
+      if (editForm.video != "") {
+        this.$refs.editDialog.videoUrl =
+          process.env.VUE_APP_BASEURL + "/" + editForm.video;
+      }
     }
   },
   created() {
