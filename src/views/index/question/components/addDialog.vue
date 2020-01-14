@@ -260,7 +260,7 @@ export default {
         difficulty: "",
         title: "",
         single_select_answer: "",
-        multiple_select_answer:"",
+        multiple_select_answer:[],
         answer_analyze: "",
         short_answer: "",
         city: [],
