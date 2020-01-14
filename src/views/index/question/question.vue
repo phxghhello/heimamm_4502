@@ -5,7 +5,12 @@
       <el-form :inline="true" ref="userForm" :model="formInline" class="demo-form-inline">
         <el-form-item label="学科" prop="role_id">
           <el-select class="normal-input" v-model="formInline.subject" placeholder="请选择学科">
-            <el-option v-for="item in subjectList" :key="item.id" :label="item.short_name" :value="item.id"></el-option>
+            <el-option
+              v-for="item in subjectList"
+              :key="item.id"
+              :label="item.short_name"
+              :value="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="阶段" prop="role_id">
@@ -17,7 +22,12 @@
         </el-form-item>
         <el-form-item label="企业" prop="role_id">
           <el-select class="normal-input" v-model="formInline.enterprise" placeholder="请选择企业">
-            <el-option  v-for="item in enterpriseList" :key="item.id" :label="item.short_name" :value="item.id"></el-option>
+            <el-option
+              v-for="item in enterpriseList"
+              :key="item.id"
+              :label="item.short_name"
+              :value="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="题型" prop="role_id">
@@ -44,7 +54,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="日期" prop="email">
-          <el-input class="normal-input" v-model="formInline.email" placeholder="选择日期"></el-input>
+          <el-date-picker v-model="formInline.value" type="date" placeholder="选择日期"></el-date-picker>
         </el-form-item>
         <el-form-item label="标题" prop="email">
           <el-input class="long-input" v-model="formInline.email"></el-input>
@@ -52,7 +62,11 @@
         <el-form-item>
           <el-button type="primary">搜索</el-button>
           <el-button>清除</el-button>
-          <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.dialogFormVisible=true">新增试题</el-button>
+          <el-button
+            type="primary"
+            icon="el-icon-plus"
+            @click="$refs.addDialog.dialogFormVisible=true"
+          >新增试题</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -61,25 +75,28 @@
       <!-- 表格 -->
       <el-table :data="tableData" style="width: 100%">
         <el-table-column type="index" label="序号" width="180"></el-table-column>
-        <el-table-column prop="username" label="题目" width="180"></el-table-column>
-        <el-table-column prop="phone" label="学科.阶段"></el-table-column>
-        <el-table-column prop="email" label="题型"></el-table-column>
-        <el-table-column prop="email" label="企业"></el-table-column>
-        <el-table-column prop="role_id" label="创建者">
+        <el-table-column label="题目" width="180">
           <template slot-scope="scope">
-            <span v-if="scope.row.role_id===1">🦁 超级管理员</span>
-            <span v-else-if="scope.row.role_id===2">🐯 管理员</span>
-            <span v-else-if="scope.row.role_id===3">🐧 老师</span>
-            <span v-else>🐸 学生</span>
+            <span v-html="scope.row.title"></span>
           </template>
         </el-table-column>
+        <el-table-column label="学科.阶段">
+          <template
+            slot-scope="scope"
+          >{{scope.row.subject_name+'.'+{1:'初级',2:'中级',3:'高级'}[scope.row.step]}}</template>
+        </el-table-column>
+        <el-table-column label="题型">
+          <template slot-scope="scope">{{{1:'单选',2:'多选',3:'简答'}[scope.row.type]}}</template>
+        </el-table-column>
+        <el-table-column prop="enterprise_name" label="企业"></el-table-column>
+        <el-table-column prop="username" label="创建者"></el-table-column>
         <el-table-column prop="status" label="状态">
           <template slot-scope="scope">
             <span class="red" v-if="scope.row.status===0">禁用</span>
             <span v-else>启用</span>
           </template>
         </el-table-column>
-        <el-table-column prop="remark" label="访问量"></el-table-column>
+        <el-table-column prop="reads" label="访问量"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="text">编辑</el-button>
@@ -108,8 +125,9 @@
 
 <script>
 //导入学科企业信息的接口
-import {subjectList} from '@/api/subject.js'
-import {enterpriseList} from '@/api/enterprise.js'
+import { subjectList } from "@/api/subject.js";
+import { enterpriseList } from "@/api/enterprise.js";
+import { questionList } from "@/api/question.js";
 
 import addDialog from "./components/addDialog.vue";
 export default {
@@ -129,33 +147,47 @@ export default {
       size: 3,
       total: 0,
       //学科列表的数据
-      subjectList:[],
-      enterpriseList:[],
+      subjectList: [],
+      enterpriseList: []
     };
   },
   methods: {
     // 改变页容量
     handleSizeChange(newSize) {
-      window.console.log(newSize);
-      // this.size = newSize;
-      // this.page = 1;
-      // this.getList();
+      this.size = newSize;
+      this.page = 1;
+      this.getList();
     },
     //改变当前页码
     handleCurrentChange(newPage) {
-      window.console.log(newPage);
-      // this.page = newPage;
-      // this.getList();
+      this.page = newPage;
+      this.getList();
+    },
+    //获取数据列表
+    getList() {
+      questionList({
+        page: this.page,
+        limit: this.size,
+        ...this.formInline
+      }).then(res => {
+        window.console.log(res);
+        if (res.code == 200) {
+          this.tableData = res.data.items;
+          this.total = res.data.pagination.total;
+        }
+      });
     }
   },
   created() {
-    subjectList().then(res=>{
-      this.subjectList =  res.data.items;
+    subjectList().then(res => {
+      this.subjectList = res.data.items;
     });
-    enterpriseList().then(res=>{
-      this.enterpriseList =  res.data.items;
-    })
-  },
+    enterpriseList().then(res => {
+      this.enterpriseList = res.data.items;
+    });
+    //获取数据列表
+    this.getList();
+  }
 };
 </script>
 
@@ -182,6 +214,9 @@ export default {
     span.red {
       color: red;
     }
+  }
+  .el-date-editor.el-input, .el-date-editor.el-input__inner{
+    width: 150px;
   }
 }
 </style>
