@@ -2,8 +2,8 @@
   <div class="question-container">
     <!-- 头部 -->
     <el-card class="header-card">
-      <el-form :inline="true" ref="userForm" :model="formInline" class="demo-form-inline">
-        <el-form-item label="学科" prop="role_id">
+      <el-form :inline="true" ref="questionForm" :model="formInline" class="demo-form-inline">
+        <el-form-item label="学科" prop="subject">
           <el-select class="normal-input" v-model="formInline.subject" placeholder="请选择学科">
             <el-option
               v-for="item in subjectList"
@@ -13,14 +13,14 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="阶段" prop="role_id">
-          <el-select class="normal-input" v-model="formInline.role_id" placeholder="请选择阶段">
+        <el-form-item label="阶段" prop="step">
+          <el-select class="normal-input" v-model="formInline.step" placeholder="请选择阶段">
             <el-option label="初级" :value="1"></el-option>
             <el-option label="中级" :value="2"></el-option>
             <el-option label="高级" :value="3"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="企业" prop="role_id">
+        <el-form-item label="企业" prop="enterprise">
           <el-select class="normal-input" v-model="formInline.enterprise" placeholder="请选择企业">
             <el-option
               v-for="item in enterpriseList"
@@ -30,15 +30,15 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="题型" prop="role_id">
-          <el-select class="normal-input" v-model="formInline.role_id" placeholder="请选择题型">
+        <el-form-item label="题型" prop="type">
+          <el-select class="normal-input" v-model="formInline.type" placeholder="请选择题型">
             <el-option label="单选" :value="1"></el-option>
             <el-option label="多选" :value="2"></el-option>
             <el-option label="简答" :value="3"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="难度" prop="role_id">
-          <el-select class="normal-input" v-model="formInline.role_id" placeholder="请选择难度">
+        <el-form-item label="难度" prop="difficulty">
+          <el-select class="normal-input" v-model="formInline.difficulty" placeholder="请选择难度">
             <el-option label="低" :value="1"></el-option>
             <el-option label="中" :value="2"></el-option>
             <el-option label="高" :value="3"></el-option>
@@ -47,21 +47,21 @@
         <el-form-item label="作者" prop="username">
           <el-input class="normal-input" v-model="formInline.username"></el-input>
         </el-form-item>
-        <el-form-item label="状态" prop="role_id">
-          <el-select class="normal-input" v-model="formInline.role_id" placeholder="请选择状态">
+        <el-form-item label="状态" prop="status">
+          <el-select class="normal-input" v-model="formInline.status" placeholder="请选择状态">
             <el-option label="禁用" :value="0"></el-option>
             <el-option label="启用" :value="1"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="日期" prop="email">
-          <el-date-picker v-model="formInline.value" type="date" placeholder="选择日期"></el-date-picker>
+        <el-form-item label="日期" prop="create_date">
+          <el-date-picker v-model="formInline.create_date" type="date" placeholder="选择日期"></el-date-picker>
         </el-form-item>
-        <el-form-item label="标题" prop="email">
-          <el-input class="long-input" v-model="formInline.email"></el-input>
+        <el-form-item label="标题" prop="title">
+          <el-input class="long-input" v-model="formInline.title"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">搜索</el-button>
-          <el-button>清除</el-button>
+          <el-button type="primary" @click="searchData">搜索</el-button>
+          <el-button @click="clear">清除</el-button>
           <el-button
             type="primary"
             icon="el-icon-plus"
@@ -100,8 +100,11 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="text">编辑</el-button>
-            <el-button type="text">{{scope.row.status=='1'?'禁用':'启用'}}</el-button>
-            <el-button type="text">删除</el-button>
+            <el-button
+              type="text"
+              @click="changeStatus(scope.row)"
+            >{{scope.row.status=='1'?'禁用':'启用'}}</el-button>
+            <el-button type="text" @click="removeData(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -127,7 +130,11 @@
 //导入学科企业信息的接口
 import { subjectList } from "@/api/subject.js";
 import { enterpriseList } from "@/api/enterprise.js";
-import { questionList } from "@/api/question.js";
+import {
+  questionList,
+  questionStatus,
+  questionRemove
+} from "@/api/question.js";
 
 import addDialog from "./components/addDialog.vue";
 export default {
@@ -136,9 +143,15 @@ export default {
   data() {
     return {
       formInline: {
+        title: "",
+        subject: "",
+        enterprise: "",
+        type: "",
+        step: "",
         username: "",
-        email: "",
-        role_id: ""
+        status: "",
+        difficulty: "",
+        create_date: ""
       },
       tableData: [],
       //分页器的数据
@@ -176,6 +189,50 @@ export default {
           this.total = res.data.pagination.total;
         }
       });
+    },
+    //搜索功能
+    searchData() {
+      this.page = 1;
+      this.getList();
+    },
+    //清除功能
+    clear() {
+      this.$refs.questionForm.resetFields();
+      this.getList();
+    },
+    //修改状态
+    changeStatus(item) {
+      questionStatus({
+        id: item.id
+      }).then(res => {
+        if (res.code === 200) {
+          this.$message.success("修改状态成功");
+          this.getList();
+        }
+      });
+    },
+    //删除功能
+    removeData(item) {
+      this.$confirm("确定删除吗?", "友情提示", {
+        confirmButtonText: "删除",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          questionRemove({
+            id: item.id
+          }).then(res => {
+            if (res.code == 200) {
+              this.$message.success("删除成功");
+              if (this.tableData.length === 1) {
+                this.page--;
+                this.page = this.page == 0 ? 1 : this.page;
+              }
+              this.getList();
+            }
+          });
+        })
+        .catch(() => {});
     }
   },
   created() {
@@ -215,7 +272,8 @@ export default {
       color: red;
     }
   }
-  .el-date-editor.el-input, .el-date-editor.el-input__inner{
+  .el-date-editor.el-input,
+  .el-date-editor.el-input__inner {
     width: 150px;
   }
 }
